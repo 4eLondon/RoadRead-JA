@@ -1,10 +1,3 @@
-/* ============================================================
-   dotnav.css — Road Ready JA
-   Persistent dot nav + topbar, merged into one file.
-   Dots always show their label. Hover animates the dot only —
-   the invisible hitbox stays full size so clicks always register.
-   ============================================================ */
-
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap");
 
 :root {
