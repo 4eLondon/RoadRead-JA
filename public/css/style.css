@@ -1,4 +1,5 @@
-/* style css*/
+/* style css */
+
 @import url("variables.css");
 
 /* ── Reset ───────────────────────────────────────────────── */
@@ -830,7 +831,7 @@ a {
 }
 
 .map-status__dot--loading {
-  background: var(--accent);
+  background: var(--green);
   animation: pulse 1.2s infinite;
 }
 
@@ -839,7 +840,7 @@ a {
 }
 
 .map-status__dot--error {
-  background: #e05555;
+  background: var(--error);
 }
 
 @keyframes pulse {

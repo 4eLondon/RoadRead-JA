@@ -1,4 +1,5 @@
-/*user css*/
+/* user css */
+
 
 @import url("variables.css");
 
@@ -109,9 +110,9 @@ a {
 }
 
 .sidebar-nav a.active {
-  background: rgba(240, 211, 22, 0.08);
-  color: var(--accent);
-  border-left: 2px solid var(--accent);
+  background: rgba(2, 99, 48, 0.08);
+  color: var(--green);
+  border-left: 2px solid var(--green);
 }
 
 /* Badge count on nav links (officer review queue) */
@@ -457,7 +458,7 @@ tbody td {
 .status-chip.pending     { background: var(--surface-2); color: var(--text-muted); border: 1px solid var(--border); }
 
 .chip.in-review,
-.status-chip.in-review   { background: rgba(240, 211, 22, 0.1); color: var(--accent); border: 1px solid rgba(240, 211, 22, 0.3); }
+.status-chip.in-review   { background: rgba(2, 99, 48, 0.12); color: var(--green); border: 1px solid rgba(2, 99, 48, 0.35); }
 
 .chip.approved,
 .status-chip.approved    { background: rgba(7, 115, 51, 0.15); color: var(--success); border: 1px solid rgba(7, 115, 51, 0.3); }
@@ -468,8 +469,8 @@ tbody td {
 /* User role chips */
 .chip.active    { background: rgba(7, 115, 51, 0.15); color: var(--success); border: 1px solid rgba(7, 115, 51, 0.3); }
 .chip.suspended { background: rgba(224, 85, 85, 0.1); color: var(--error); border: 1px solid rgba(224, 85, 85, 0.3); }
-.chip.admin     { background: rgba(240, 211, 22, 0.1); color: var(--accent); border: 1px solid rgba(240, 211, 22, 0.3); }
-.chip.officer   { background: rgba(76, 175, 135, 0.1); color: #4caf87; border: 1px solid rgba(76, 175, 135, 0.3); }
+.chip.admin     { background: rgba(229, 200, 21, 0.1); color: var(--accent); border: 1px solid rgba(229, 200, 21, 0.3); }
+.chip.officer   { background: rgba(2, 99, 48, 0.1); color: var(--green); border: 1px solid rgba(2, 99, 48, 0.3); }
 .chip.citizen   { background: var(--surface-2); color: var(--text-muted); border: 1px solid var(--border); }
 
 /* Active licence badge (my-licence page) */
@@ -1088,7 +1089,7 @@ tbody td {
 
 /* Verified strip at bottom of card */
 .valid-strip {
-  background: var(--accent);
+  background: var(--green);
   text-align: center;
   padding: 6px;
   font-family: var(--font-mono);
@@ -1156,8 +1157,8 @@ tbody td {
    NOTICE BANNER (my-licence page)
    ══════════════════════════════════════════════════════════ */
 .notice {
-  background: rgba(240, 211, 22, 0.06);
-  border: 1px solid rgba(240, 211, 22, 0.25);
+  background: rgba(229, 200, 21, 0.06);
+  border: 1px solid rgba(229, 200, 21, 0.25);
   border-radius: 2px;
   padding: 14px 18px;
   font-size: 0.8rem;
@@ -1181,7 +1182,7 @@ tbody td {
 /* Action banner (alert at top of tracking page) */
 .action-banner {
   background: var(--surface);
-  border: 1px solid var(--accent);
+  border: 1px solid var(--green);
   border-radius: 2px;
   padding: 16px 20px;
   display: flex;
@@ -1198,7 +1199,7 @@ tbody td {
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--green);
   margin-bottom: 4px;
 }
 
@@ -1301,10 +1302,10 @@ tbody td {
 }
 
 .tl-step.current .tl-dot {
-  border-color: var(--accent);
-  background: var(--accent);
+  border-color: var(--green);
+  background: var(--green);
   color: #1a1a1a;
-  box-shadow: 0 0 0 4px rgba(240, 211, 22, 0.15);
+  box-shadow: 0 0 0 4px rgba(2, 99, 48, 0.18);
 }
 
 .tl-content {
@@ -1557,8 +1558,8 @@ tbody td {
 }
 
 .result-header.active    { background: var(--green); }
-.result-header.expired   { background: #5a1a1a; border-bottom: 1px solid var(--error); }
-.result-header.suspended { background: #3a2800; border-bottom: 1px solid var(--accent); }
+.result-header.expired   { background: #521818; border-bottom: 1px solid var(--error); }
+.result-header.suspended { background: #352500; border-bottom: 1px solid var(--accent); }
 .result-header.invalid   { background: var(--surface-2); }
 
 .result-icon {
