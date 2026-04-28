@@ -1,3 +1,6 @@
+/* dotnav css*/
+@import url("variables.css")
+
 /* ── Topbar ──────────────────────────────────────────────── */
 .topbar {
   position: fixed;
