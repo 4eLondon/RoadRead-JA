@@ -1,433 +1,471 @@
 @import url("variables.css");
+
 /* ── Reset & Base ────────────────────────────────────────── */
 *,
 *::before,
 *::after {
-box-sizing: border-box;
-margin: 0;
-padding: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
+
 body {
-min-height: 100vh;
-display: flex;
-align-items: center;
-justify-content: center;
-background: var(--bg);
-font-family: var(--font-ui);
-font-size: 14px;
-line-height: 1.6;
-color: var(--text);
-padding-top: 52px;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text);
+  padding-top: 52px;
 }
+
 /* ── Card ────────────────────────────────────────────────── */
 .card {
-width: 780px;
-min-height: 480px;
-border-radius: 2px;
-border: 1px solid var(--border);
-background: var(--bg);
-position: relative;
-/* anchor for absolute children */
-overflow: hidden;
+  width: 780px;
+  min-height: 480px;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
 }
+
 .theme-toggle {
-background: none;
-border: 1px solid var(--border);
-border-radius: 2px;
-color: var(--text-muted);
-padding: 6px 8px;
-cursor: pointer;
-display: flex;
-align-items: center;
-justify-content: center;
-transition: border-color 0.22s, color 0.22s;
-margin-left: 12px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--text-muted);
+  padding: 6px 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.22s, color 0.22s;
+  margin-left: 12px;
 }
+
 .theme-toggle:hover {
-border-color: var(--accent);
-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent);
 }
+
 /* ════════════════════════════════════════════════════════════
-YELLOW PANEL
+GREEN PANEL
+Replaces the Yellow Panel.
 Absolutely positioned so it can slide freely across the card.
-Register state: sits on the LEFT  (left: 0)
-Login state:    sits on the RIGHT (left: calc(100% - 300px))
 ════════════════════════════════════════════════════════════ */
 .panel-left {
-position: absolute;
-top: 0;
-bottom: 0;
-left: 0;
-width: var(--panel-w);
-background: var(--accent);
-color: #1a1a1a;
-display: flex;
-flex-direction: column;
-padding: 28px;
-overflow: hidden;
-z-index: 2;
-transition: left var(--slide-dur) var(--slide-ease);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--panel-w);
+  background: var(--green); /* CHANGED: Yellow -> Green */
+  color: #fff; /* CHANGED: Black text -> White */
+  display: flex;
+  flex-direction: column;
+  padding: 28px;
+  overflow: hidden;
+  z-index: 2;
+  transition: left var(--slide-dur) var(--slide-ease);
 }
+
 /* Login: slide panel to the right edge */
 .card.is-login .panel-left {
-left: calc(100% - var(--panel-w));
+  left: calc(100% - var(--panel-w));
 }
-/* Grid texture */
+
+/* Grid texture (Updated for Green background) */
 .panel-left::before {
-content: "";
-position: absolute;
-inset: 0;
-background:
-repeating-linear-gradient(0deg,
-transparent,
-transparent 39px,
-rgba(0, 0, 0, 0.07) 39px,
-rgba(0, 0, 0, 0.07) 40px),
-repeating-linear-gradient(90deg,
-transparent,
-transparent 39px,
-rgba(0, 0, 0, 0.05) 39px,
-rgba(0, 0, 0, 0.05) 40px);
-pointer-events: none;
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(0deg,
+      transparent,
+      transparent 39px,
+      rgba(255, 255, 255, 0.05) 39px,
+      rgba(255, 255, 255, 0.05) 40px),
+    repeating-linear-gradient(90deg,
+      transparent,
+      transparent 39px,
+      rgba(255, 255, 255, 0.03) 39px,
+      rgba(255, 255, 255, 0.03) 40px);
+  pointer-events: none;
 }
+
 /* Brand */
 .brand {
-position: relative;
-z-index: 1;
-font-family: var(--font-mono);
-font-size: 0.72rem;
-font-weight: 600;
-letter-spacing: 0.2em;
-text-transform: uppercase;
-color: rgba(0, 0, 0, 0.7);
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.8); /* CHANGED: White */
 }
+
 /* Centred message */
 .panel-content {
-flex: 1;
-display: flex;
-align-items: center;
-justify-content: center;
-position: relative;
-z-index: 1;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
 }
+
 .panel-msg {
-text-align: center;
+  text-align: center;
 }
+
 .panel-msg h2 {
-font-family: var(--font-mono);
-font-size: 1.4rem;
-font-weight: 600;
-color: #1a1a1a;
-margin-bottom: 10px;
-letter-spacing: -0.01em;
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #ffffff; /* CHANGED: White */
+  margin-bottom: 10px;
+  letter-spacing: -0.01em;
 }
+
 .panel-msg p {
-font-size: 0.8rem;
-line-height: 1.7;
-color: rgba(0, 0, 0, 0.6);
-margin-bottom: 28px;
+  font-size: 0.8rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.7); /* CHANGED: White-ish */
+  margin-bottom: 28px;
 }
+
 .panel-msg--hidden {
-display: none;
+  display: none;
 }
+
 /* ════════════════════════════════════════════════════════════
 DARK FORM PANEL
-Also absolutely positioned, same height as the card.
-Register: form on the RIGHT → left: 300px
-Login:    form on the LEFT  → left: 0
-Width fills the remaining space (calc(100% - 300px)).
 ════════════════════════════════════════════════════════════ */
 .panel-right {
-position: absolute;
-top: 0;
-bottom: 0;
-left: var(--panel-w);
-width: calc(100% - var(--panel-w));
-display: flex;
-align-items: center;
-justify-content: center;
-padding: 40px 50px;
-background: var(--bg);
-z-index: 1;
-transition: left var(--slide-dur) var(--slide-ease);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--panel-w);
+  width: calc(100% - var(--panel-w));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 50px;
+  background: var(--bg);
+  z-index: 1;
+  transition: left var(--slide-dur) var(--slide-ease);
 }
+
 /* Login: form shifts to the left */
 .card.is-login .panel-right {
-left: 0;
+  left: 0;
 }
-/* Card needs an explicit height so absolute children have
-something to fill — min-height alone isn't enough */
+
 .card::after {
-content: "";
-display: block;
-min-height: 480px;
+  content: "";
+  display: block;
+  min-height: 480px;
 }
-/* ── Form Wrappers ───────────────────────────────────────── */
+
+/* ── Form Wrappers ──────────────────────────────────────── */
 .form-wrap {
-width: 100%;
-display: flex;
-flex-direction: column;
-align-items: flex-start;
-gap: 0;
-animation: formFadeIn 0.35s ease both;
-animation-delay: 0.15s;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  animation: formFadeIn 0.35s ease both;
+  animation-delay: 0.15s;
 }
+
 .form-wrap--hidden {
-display: none;
+  display: none;
 }
+
 @keyframes formFadeIn {
-from {
-opacity: 0;
-transform: translateY(12px);
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-to {
-opacity: 1;
-transform: translateY(0);
-}
-}
+
 .form-wrap h1 {
-font-family: var(--font-mono);
-font-size: 1.4rem;
-font-weight: 600;
-color: var(--text);
-margin-bottom: 4px;
-letter-spacing: -0.01em;
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+  letter-spacing: -0.01em;
 }
+
 /* ── Fields ──────────────────────────────────────────────── */
 .field {
-width: 100%;
-margin-bottom: 1.2rem;
-position: relative;
+  width: 100%;
+  margin-bottom: 1.2rem;
+  position: relative;
 }
+
 .field__icon {
-display: none;
+  display: none;
 }
+
 .field input {
-width: 100%;
-padding: 0.65rem 0.85rem;
-background: var(--surface);
-border: 1px solid var(--border);
-border-radius: 2px;
-color: var(--text);
-font-family: var(--font-ui);
-font-size: 0.88rem;
-outline: none;
-transition:
-border-color var(--transition),
-background var(--transition);
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 0.88rem;
+  outline: none;
+  transition:
+    border-color var(--transition),
+    background var(--transition);
 }
+
 .field input:focus {
-border-color: var(--accent);
-background: var(--surface-2);
+  border-color: var(--accent);
+  background: var(--surface-2);
 }
+
 .field input::placeholder {
-color: var(--text-subtle);
+  color: var(--text-subtle);
 }
+
 /* ── Field errors ────────────────────────────────────────── */
 .field-error {
-display: block;
-font-family: var(--font-mono);
-font-size: 0.68rem;
-color: var(--error);
-margin-top: 0.3rem;
-letter-spacing: 0.02em;
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--error);
+  margin-top: 0.3rem;
+  letter-spacing: 0.02em;
 }
+
 /* ── Forgot link ─────────────────────────────────────────── */
 .forgot-link {
-font-family: var(--font-mono);
-font-size: 0.72rem;
-color: var(--text-muted);
-text-decoration: none;
-align-self: flex-start;
-margin-bottom: 1rem;
-margin-top: -0.4rem;
-letter-spacing: 0.04em;
-transition: color var(--transition);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  align-self: flex-start;
+  margin-bottom: 1rem;
+  margin-top: -0.4rem;
+  letter-spacing: 0.04em;
+  transition: color var(--transition);
 }
+
 .forgot-link:hover {
-color: var(--accent);
+  color: var(--accent);
 }
+
 /* ── Buttons ─────────────────────────────────────────────── */
 .btn {
-display: inline-flex;
-align-items: center;
-justify-content: center;
-padding: 0.68rem 1.8rem;
-border-radius: 2px;
-font-family: var(--font-mono);
-font-size: 0.75rem;
-font-weight: 600;
-letter-spacing: 0.12em;
-text-transform: uppercase;
-cursor: pointer;
-border: none;
-text-decoration: none;
-transition:
-background var(--transition),
-color var(--transition),
-transform 0.1s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.68rem 1.8rem;
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  transition:
+    background var(--transition),
+    color var(--transition),
+    transform 0.1s;
 }
+
 .btn:active {
-transform: translateY(1px);
+  transform: translateY(1px);
 }
+
 .btn--outline {
-background: transparent;
-border: 1px solid rgba(0, 0, 0, 0.4);
-color: #1a1a1a;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.4); /* Adjusted border */
+  color: #fff; /* Adjusted text */
 }
+
 .btn--outline:hover {
-background: rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.08);
 }
+
 .btn-main {
-background: var(--accent);
-color: #1a1a1a;
-width: 100%;
-margin-top: 0.4rem;
+  background: var(--accent); /* Keep Submit button Yellow */
+  color: #1a1a1a;
+  width: 100%;
+  margin-top: 0.4rem;
 }
+
 .btn-main:hover {
-background: var(--accent-dim);
+  background: var(--accent-dim);
 }
+
 .btn-main:disabled {
-opacity: 0.5;
-cursor: not-allowed;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
-/* ── Toast ──────────────────────────────────────────────── */
+
+/* ─ Toast ───────────────────────────────────────────────── */
 .toast {
-position: fixed;
-bottom: 32px;
-left: 50%;
-transform: translateX(-50%) translateY(20px);
-padding: 12px 28px;
-border-radius: 2px;
-font-family: var(--font-mono);
-font-size: 0.72rem;
-font-weight: 600;
-letter-spacing: 0.1em;
-text-transform: uppercase;
-opacity: 0;
-transition:
-opacity 0.3s ease,
-transform 0.3s ease;
-z-index: 999;
-white-space: nowrap;
-pointer-events: none;
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  padding: 12px 28px;
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+  z-index: 999;
+  white-space: nowrap;
+  pointer-events: none;
 }
+
 .toast--success {
-background: var(--success);
-color: #fff;
+  background: var(--success);
+  color: #fff;
 }
+
 .toast--error {
-background: var(--error);
-color: #fff;
+  background: var(--error);
+  color: #fff;
 }
+
 .toast--visible {
-opacity: 1;
-transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
+
 /* ══════════════════════════════════════════════════════════
 RESPONSIVE — Tablet (≤ 780px) & Mobile (≤ 480px)
 ══════════════════════════════════════════════════════════ */
 @media (max-width: 820px) {
-body {
-padding: 16px;
-padding-top: 68px;
-/* topbar + breathing room */
-align-items: flex-start;
+  body {
+    padding: 16px;
+    padding-top: 68px;
+    align-items: flex-start;
+  }
+
+  .card {
+    width: 100%;
+    min-height: unset;
+    border-radius: 2px;
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+  }
+
+  .panel-left {
+    position: relative;
+    top: auto;
+    bottom: auto;
+    left: auto !important;
+    width: 100%;
+    min-height: 140px;
+    padding: 20px 24px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    transition: none;
+  }
+
+  .panel-content {
+    flex: 1;
+    justify-content: flex-end;
+  }
+
+  .panel-msg {
+    text-align: right;
+  }
+
+  .panel-msg h2 {
+    font-size: 1rem;
+    margin-bottom: 6px;
+  }
+
+  .panel-msg p {
+    font-size: 0.72rem;
+    margin-bottom: 16px;
+  }
+
+  .panel-right {
+    position: relative;
+    top: auto;
+    bottom: auto;
+    left: auto !important;
+    width: 100%;
+    padding: 28px 24px 32px;
+    transition: none;
+  }
+
+  .card::after {
+    display: none;
+  }
+
+  .form-wrap {
+    animation: none;
+  }
+
+  .form-wrap h1 {
+    font-size: 1.15rem;
+    margin-bottom: 6px;
+  }
+
+  .field {
+    margin-bottom: 1rem;
+  }
 }
-/* ── Card becomes single-column ── */
-.card {
-width: 100%;
-min-height: unset;
-border-radius: 2px;
-/* Reset absolute positioning — stack panels vertically */
-display: flex;
-flex-direction: column;
-overflow: visible;
-}
-/* ── Yellow panel sits on top, full width ── */
-.panel-left {
-position: relative;
-top: auto;
-bottom: auto;
-left: auto !important;
-/* override login/register states */
-width: 100%;
-min-height: 140px;
-padding: 20px 24px;
-flex-direction: row;
-align-items: center;
-justify-content: space-between;
-transition: none;
-}
-/* Keep panel content centred within its new row layout */
-.panel-content {
-flex: 1;
-justify-content: flex-end;
-}
-.panel-msg {
-text-align: right;
-}
-.panel-msg h2 {
-font-size: 1rem;
-margin-bottom: 6px;
-}
-.panel-msg p {
-font-size: 0.72rem;
-margin-bottom: 16px;
-}
-/* ── Dark form panel sits below, full width ── */
-.panel-right {
-position: relative;
-top: auto;
-bottom: auto;
-left: auto !important;
-width: 100%;
-padding: 28px 24px 32px;
-transition: none;
-}
-/* Remove the ::after spacer — no longer needed */
-.card::after {
-display: none;
-}
-/* ── Form layout tightens ── */
-.form-wrap {
-animation: none;
-/* avoid jarring re-animations on resize */
-}
-.form-wrap h1 {
-font-size: 1.15rem;
-margin-bottom: 6px;
-}
-.field {
-margin-bottom: 1rem;
-}
-}
+
 @media (max-width: 480px) {
-body {
-padding: 12px;
-padding-top: 64px;
-}
-/* Panel fully stacks */
-.panel-left {
-flex-direction: column;
-align-items: flex-start;
-min-height: 120px;
-padding: 18px 20px;
-}
-.panel-content {
-justify-content: flex-start;
-width: 100%;
-margin-top: 12px;
-}
-.panel-msg {
-text-align: left;
-}
-.panel-right {
-padding: 24px 20px 28px;
-}
-/* Buttons stretch full width */
-.btn--outline {
-width: 100%;
-margin-top: 4px;
-}
+  body {
+    padding: 12px;
+    padding-top: 64px;
+  }
+
+  .panel-left {
+    flex-direction: column;
+    align-items: flex-start;
+    min-height: 120px;
+    padding: 18px 20px;
+  }
+
+  .panel-content {
+    justify-content: flex-start;
+    width: 100%;
+    margin-top: 12px;
+  }
+
+  .panel-msg {
+    text-align: left;
+  }
+
+  .panel-right {
+    padding: 24px 20px 28px;
+  }
+
+  .btn--outline {
+    width: 100%;
+    margin-top: 4px;
+  }
 }
