@@ -4,20 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My e-Licence — Road Ready JA</title>
+  <link rel="icon" type="image/png" href="/assets/favicon-32x32.png">
     <link rel="stylesheet" href="/public/css/variables.css" />
 <link rel="stylesheet" href="/public/css/user.css" />
 </head>
 <body>
 
-<nav>
-  <div class="logo">Road<span>Ready</span> JA</div>
-  <ul class="nav-links">
-    <li><a href="../index.html">Home</a></li>
-    <li><a href="dashboard.html">Dashboard</a></li>
-    <li><a href="my-licence.html" class="active">My e-Licence</a></li>
-    <li><a href="application.html">Applications</a></li>
-  </ul>
-</nav>
+    
+    
+  <script src="public/components/defaultNavbar.js"></script>
+  <default-navbar></default-navbar>
+
 
 <div class="page">
   <div class="page-header">
@@ -127,5 +124,8 @@
   document.getElementById('info-issued').textContent = fmt(issued);
   document.getElementById('info-expiry').textContent = fmt(expiry);
 </script>
+
+
+  <script src="/public/js/theme.js"></script>
 </body>
 </html>

@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Licence Verification — Road Ready JA</title>
+    <link rel="icon" type="image/png" href="/assets/favicon-32x32.png">
    <link rel="stylesheet" href="/public/css/variables.css" />
  <link rel="stylesheet" href="/public/css/user.css" />
  <link rel="stylesheet" href="/public/css/style.css" />
@@ -12,59 +13,8 @@
 <body>
 
   <!-- ===== NAVBAR ===== -->
-  <nav class="navbar">
-    <div class="nav-left">
-      <img src="/public/images/logo.png" style="width: 160px; height: auto" />
-    </div>
-    <ul class="nav-center">
-      <li><a href="#home">Home</a></li>
-      <li><a href="#services">Services</a></li>
-      <li><a href="#about">About Us</a></li>
-      <li><a href="#contact">Contact</a></li>
-
-
-
-      <li><a href="/pages/verification.html">Verification</a></li>
-      <li><a href="/pages/admin.html">admin</a></li>
-      <li><a href="/pages/my-licence.html">lie</a></li>
-      <li><a href="/pages/tracking.html">traking</a></li>
-      <li><a href="/pages/officer-review.html">of</a></li>
-
-
-
-
-      <li><a href="/pages/dashboard.html">Dashboard</a></li>
-    </ul>
-    <div class="nav-right">
-      <button class="login" onclick="window.location.href = '/pages/auth.html'">
-        Login / Register
-      </button>
-
-      <button id="theme-toggle" class="theme-toggle" aria-label="Switch to light mode"></button>
-
-    </div>
-  </nav>
-
-
-<div class="page">
-  <div class="authority-badge">Authorized Verification Only</div>
-  <h1>Licence Verification</h1>
-  <p class="sub">Enter a licence number or scan the verification code to confirm validity.</p>
-
-  <div class="search-card">
-    <label>Licence Number</label>
-    <div class="input-row">
-      <input type="text" class="lic-input" id="licInput" placeholder="JA-XXXXXX" maxlength="12" />
-      <button class="btn-verify" onclick="verify()">Verify →</button>
-    </div>
-
-    <div class="divider">or</div>
-
-    <button class="scan-btn" onclick="alert('QR scanner coming soon.')">
-      <span>📷</span>
-      Scan Verification QR Code
-    </button>
-  </div>
+  <script src="public/components/defaultNavbar.js"></script>
+  <admin-navbar></admin-navbar>
 
   <!-- RESULT PANEL -->
   <div class="result-card show" id="resultCard">
@@ -157,5 +107,8 @@
     if (e.key === 'Enter') verify();
   });
 </script>
+
+  <script src="/public/js/theme.js"></script>
+
 </body>
 </html>
