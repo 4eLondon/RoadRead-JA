@@ -3,10 +3,10 @@
 /* ── Dark mode (default) ─────────────────────────────────── */
 :root {
   /* Backgrounds - Slightly darker for eye comfort */
-  --bg:        #111111;
-  --surface:   #1e1e1e;
-  --surface-2: #2a2a2a;
-  --border:    #333333;
+  --bg:        #2a2a2a;
+  --surface:   #383838;
+  --surface-2: #4a4a4a;
+  --border:    #5c5c5c;
   
   /* Accent — Yellow (Slightly muted for dark mode) */
   --accent:     #e6b800; 
