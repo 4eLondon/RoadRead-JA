@@ -137,7 +137,7 @@ HERO
   display: flex;
   align-items: center;
   padding: 80px 60px;
-  background: url("../images/back1.webp") center / cover no-repeat;
+  background: url("../images/back1.jpg") center / cover no-repeat;
   position: relative;
 }
 
@@ -164,7 +164,7 @@ HERO
   font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--green);
   margin-bottom: 12px;
   display: block;
 }
@@ -179,7 +179,7 @@ HERO
 }
 
 .welcome-content h1 span {
-  color: var(--accent);
+  color: var(--green);
 }
 
 .hero-sub {
@@ -215,8 +215,8 @@ HERO
 }
 
 .btn-outline:hover {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--green);
+  border-color: var(--green);
   color: #1a1a1a;
 }
 
@@ -235,7 +235,7 @@ SHARED SECTION HELPERS
   font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--green);
   margin-bottom: 8px;
 }
 
@@ -284,7 +284,7 @@ SERVICES
 }
 
 .service-card:hover {
-  border-color: var(--accent);
+  border-color: var(--green);
   transform: translateY(-3px);
 }
 
@@ -316,7 +316,7 @@ SERVICES
   font-size: 0.65rem;
   font-weight: 600;
   letter-spacing: 0.08em;
-  color: var(--accent);
+  color: var(--green);
   text-transform: uppercase;
   transition: letter-spacing var(--tr);
   align-self: flex-start;
@@ -435,7 +435,7 @@ ABOUT
 }
 
 .about__mission {
-  border-left: 2px solid var(--accent);
+  border-left: 2px solid var(--green);
   padding-left: 16px;
   font-family: var(--font-mono);
   font-size: 0.78rem;
@@ -465,7 +465,7 @@ VISION / MISSION SPLIT
 }
 
 .vm-card--accent {
-  background: var(--green); /* CHANGED: Yellow -> Green */
+  background: var(--green);
 }
 
 .vm-card__label {
@@ -477,11 +477,7 @@ VISION / MISSION SPLIT
 }
 
 .vm-card--dark .vm-card__label {
-  color: var(--accent);
-}
-
-.vm-card--accent .vm-card__label {
-  color: rgba(255, 255, 255, 0.6); /* CHANGED: White-ish */
+  color: var(--green);
 }
 
 .vm-card p {
