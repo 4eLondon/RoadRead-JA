@@ -1,14 +1,6 @@
-/* ============================================================
-   users.css — Road Ready JA
-   Shared stylesheet for: admin, my-licence, officer-review,
-   tracking, and verification pages.
+/*user css*/
 
-   Imports tokens.css for all CSS variables.
-   IBM Plex Mono + IBM Plex Sans throughout.
-   Dark system (#1a1a1a bg), yellow accent, sharp 2px radius.
-   ============================================================ */
-
-@import url("tokens.css");
+@import url("variables.css");
 
 /* ── Reset ───────────────────────────────────────────────── */
 *,
