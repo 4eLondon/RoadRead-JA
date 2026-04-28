@@ -1,605 +1,523 @@
-/* form css */
-
 @import url("variables.css");
 /* ── Reset ───────────────────────────────────────────────── */
 *,
 *::before,
 *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+box-sizing: border-box;
+margin: 0;
+padding: 0;
 }
-
 html,
 body {
-  height: 100%;
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-ui);
-  font-size: 14px;
-  line-height: 1.5;
+height: 100%;
+background: var(--bg);
+color: var(--text);
+font-family: var(--font-ui);
+font-size: 14px;
+line-height: 1.5;
 }
-
 /* ── Top bar ─────────────────────────────────────────────── */
 .topbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: var(--topbar-h);
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 2rem;
-  z-index: 100;
+position: fixed;
+top: 0;
+left: 0;
+right: 0;
+height: var(--topbar-h);
+background: var(--surface);
+border-bottom: 1px solid var(--border);
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 0 2rem;
+z-index: 100;
 }
-
 .theme-toggle {
-  background: none;
-  border: 1px solid var(--border);
-  border-radius: 2px;
-  color: var(--text-muted);
-  padding: 6px 8px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: border-color 0.22s, color 0.22s;
-  margin-left: 12px;
+background: none;
+border: 1px solid var(--border);
+border-radius: 2px;
+color: var(--text-muted);
+padding: 6px 8px;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+transition: border-color 0.22s, color 0.22s;
+margin-left: 12px;
 }
-
 .theme-toggle:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+border-color: var(--accent);
+color: var(--accent);
 }
-
 .topbar__brand {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--accent);
+font-family: var(--font-mono);
+font-size: 0.72rem;
+font-weight: 600;
+letter-spacing: 0.2em;
+text-transform: uppercase;
+color: var(--accent);
 }
-
 .topbar__back {
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  color: var(--text-muted);
-  text-decoration: none;
-  letter-spacing: 0.06em;
-  transition: color var(--tr);
+font-family: var(--font-mono);
+font-size: 0.68rem;
+color: var(--text-muted);
+text-decoration: none;
+letter-spacing: 0.06em;
+transition: color var(--tr);
 }
-
 .topbar__back:hover {
-  color: var(--accent);
+color: var(--accent);
 }
-
 /* ── Page: centred card below topbar ─────────────────────── */
 .page {
-  min-height: 100vh;
-  padding-top: var(--topbar-h);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+min-height: 100vh;
+padding-top: var(--topbar-h);
+display: flex;
+align-items: center;
+justify-content: center;
 }
-
-/* ── Card ────────────────────────────────────────────────── */
+/* ── Card ───────────────────────────────────────────────── */
 .form-card {
-  width: 100%;
-  max-width: 520px;
-  border: 1px solid var(--border);
-  border-radius: 2px;
-  background: var(--surface);
-  overflow: hidden;
+width: 100%;
+max-width: 520px;
+border: 1px solid var(--border);
+border-radius: 2px;
+background: var(--surface);
+overflow: hidden;
 }
-
 /* ── Card header (eyebrow + title + tabs) ────────────────── */
 .card-head {
-  padding: 1.2rem 1.6rem 0;
-  border-bottom: 1px solid var(--border);
+padding: 1.2rem 1.6rem 0;
+border-bottom: 1px solid var(--border);
 }
-
 .eyebrow {
-  display: block;
-  font-family: var(--font-mono);
-  font-size: 0.58rem;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 0.2rem;
+display: block;
+font-family: var(--font-mono);
+font-size: 0.58rem;
+font-weight: 600;
+letter-spacing: 0.2em;
+text-transform: uppercase;
+color: var(--accent);
+margin-bottom: 0.2rem;
 }
-
 .page-title {
-  font-family: var(--font-mono);
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text);
-  letter-spacing: -0.01em;
-  margin-bottom: 1rem;
+font-family: var(--font-mono);
+font-size: 1.1rem;
+font-weight: 600;
+color: var(--text);
+letter-spacing: -0.01em;
+margin-bottom: 1rem;
 }
-
 /* ── Tabs ────────────────────────────────────────────────── */
 .tab-group {
-  display: flex;
-  margin: 0 -1px;
-  /* bleed to card edges */
+display: flex;
+margin: 0 -1px;
+/* bleed to card edges */
 }
-
 .tab {
-  flex: 1;
-  padding: 0.55rem 0;
-  background: transparent;
-  border: none;
-  border-top: 2px solid transparent;
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition:
-    color var(--tr),
-    border-color var(--tr),
-    background var(--tr);
-  text-align: center;
+flex: 1;
+padding: 0.55rem 0;
+background: transparent;
+border: none;
+border-top: 2px solid transparent;
+font-family: var(--font-mono);
+font-size: 0.65rem;
+font-weight: 600;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+color: var(--text-muted);
+cursor: pointer;
+transition:
+color var(--tr),
+border-color var(--tr),
+background var(--tr);
+text-align: center;
 }
-
 .tab:hover {
-  color: var(--text);
+color: var(--text);
 }
-
 .tab.active {
-  color: var(--accent);
-  border-top-color: var(--accent);
-  background: var(--surface-2);
+color: var(--accent);
+border-top-color: var(--accent);
+background: var(--surface-2);
 }
-
 /* ── Card body ───────────────────────────────────────────── */
 .card-body {
-  padding: 1.4rem 1.6rem 1.6rem;
+padding: 1.4rem 1.6rem 1.6rem;
 }
-
 /* ── Form panels ─────────────────────────────────────────── */
 .form-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
+display: flex;
+flex-direction: column;
+gap: 0.85rem;
 }
-
 .form-panel.hidden {
-  display: none;
+display: none;
 }
-
 /* ── Field rows: default = full width, .pair = side by side ─ */
 .frow {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.85rem;
+display: grid;
+grid-template-columns: 1fr;
+gap: 0.85rem;
 }
-
 .frow.pair {
-  grid-template-columns: 1fr 1fr;
+grid-template-columns: 1fr 1fr;
 }
-
 /* ── Field group ─────────────────────────────────────────── */
 .fgroup {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
+display: flex;
+flex-direction: column;
+gap: 0.35rem;
 }
-
 /* ── Labels ──────────────────────────────────────────────── */
 .flabel {
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-muted);
+font-family: var(--font-mono);
+font-size: 0.6rem;
+font-weight: 500;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+color: var(--text-muted);
 }
-
 /* ── Inputs ──────────────────────────────────────────────── */
 .finput {
-  width: 100%;
-  padding: 0.6rem 0.8rem;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 2px;
-  color: var(--text);
-  font-family: var(--font-ui);
-  font-size: 0.85rem;
-  outline: none;
-  transition:
-    border-color var(--tr),
-    background var(--tr);
+width: 100%;
+padding: 0.6rem 0.8rem;
+background: var(--bg);
+border: 1px solid var(--border);
+border-radius: 2px;
+color: var(--text);
+font-family: var(--font-ui);
+font-size: 0.85rem;
+outline: none;
+transition:
+border-color var(--tr),
+background var(--tr);
 }
-
 .finput:focus {
-  border-color: var(--accent);
-  background: var(--surface-2);
+border-color: var(--accent);
+background: var(--surface-2);
 }
-
 .finput::placeholder {
-  color: var(--text-subtle);
+color: var(--text-subtle);
 }
-
 .finput[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(0.5);
-  cursor: pointer;
+filter: invert(0.5);
+cursor: pointer;
 }
-
 /* ── Select ──────────────────────────────────────────────── */
 .fselect {
-  width: 100%;
-  padding: 0.6rem 2rem 0.6rem 0.8rem;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 2px;
-  color: var(--text);
-  font-family: var(--font-ui);
-  font-size: 0.85rem;
-  outline: none;
-  cursor: pointer;
-  -webkit-appearance: none;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%238a857e' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.8rem center;
-  transition: border-color var(--tr);
+width: 100%;
+padding: 0.6rem 2rem 0.6rem 0.8rem;
+background: var(--bg);
+border: 1px solid var(--border);
+border-radius: 2px;
+color: var(--text);
+font-family: var(--font-ui);
+font-size: 0.85rem;
+outline: none;
+cursor: pointer;
+-webkit-appearance: none;
+appearance: none;
+background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%238a857e' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
+background-repeat: no-repeat;
+background-position: right 0.8rem center;
+transition: border-color var(--tr);
 }
-
 .fselect:focus {
-  border-color: var(--accent);
+border-color: var(--accent);
 }
-
 .fselect option {
-  background: var(--surface);
-  color: var(--text);
+background: var(--surface);
+color: var(--text);
 }
-
 /* ── File drop ───────────────────────────────────────────── */
 .file-drop {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.75rem 1rem;
-  border: 1px dashed var(--border);
-  border-radius: 2px;
-  background: var(--bg);
-  cursor: pointer;
-  transition:
-    border-color var(--tr),
-    background var(--tr);
+display: flex;
+align-items: center;
+justify-content: center;
+padding: 0.75rem 1rem;
+border: 1px dashed var(--border);
+border-radius: 2px;
+background: var(--bg);
+cursor: pointer;
+transition:
+border-color var(--tr),
+background var(--tr);
 }
-
 .file-drop:hover {
-  border-color: var(--accent);
-  background: var(--surface-2);
+border-color: var(--accent);
+background: var(--surface-2);
 }
-
 .file-drop input[type="file"] {
-  display: none;
+display: none;
 }
-
 .file-drop__text {
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  color: var(--text-muted);
-  letter-spacing: 0.05em;
-  text-align: center;
+font-family: var(--font-mono);
+font-size: 0.62rem;
+color: var(--text-muted);
+letter-spacing: 0.05em;
+text-align: center;
 }
-
 .file-drop--has-file {
-  border-color: var(--success);
-  border-style: solid;
+border-color: var(--success);
+border-style: solid;
 }
-
 .file-drop--has-file .file-drop__text {
-  color: var(--success);
+color: var(--success);
 }
-
 /* ── Field errors ────────────────────────────────────────── */
 .ferror {
-  font-family: var(--font-mono);
-  font-size: 0.58rem;
-  color: var(--error);
-  letter-spacing: 0.02em;
-  min-height: 0.75em;
+font-family: var(--font-mono);
+font-size: 0.58rem;
+color: var(--error);
+letter-spacing: 0.02em;
+min-height: 0.75em;
 }
-
 /* ── Submit button ───────────────────────────────────────── */
 .btn-submit {
-  width: 100%;
-  margin-top: 0.3rem;
-  padding: 0.68rem;
-  background: var(--accent);
-  color: #1a1a1a;
-  border: none;
-  border-radius: 2px;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition:
-    background var(--tr),
-    transform 0.1s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+width: 100%;
+margin-top: 0.3rem;
+padding: 0.68rem;
+background: var(--accent);
+color: #1a1a1a;
+border: none;
+border-radius: 2px;
+font-family: var(--font-mono);
+font-size: 0.72rem;
+font-weight: 600;
+letter-spacing: 0.12em;
+text-transform: uppercase;
+cursor: pointer;
+transition:
+background var(--tr),
+transform 0.1s;
+display: flex;
+align-items: center;
+justify-content: center;
 }
-
 .btn-submit:hover {
-  background: var(--accent-dim);
+background: var(--accent-dim);
 }
-
 .btn-submit:active {
-  transform: translateY(1px);
+transform: translateY(1px);
 }
-
 .btn-submit:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
+opacity: 0.45;
+cursor: not-allowed;
 }
-
 /* ── Success panel ───────────────────────────────────────── */
 .success {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.6rem;
-  text-align: center;
-  padding: 1rem 0;
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 0.6rem;
+text-align: center;
+padding: 1rem 0;
 }
-
 .success.hidden {
-  display: none;
+display: none;
 }
-
 .success__icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 2px;
-  border: 1px solid var(--success);
-  color: var(--success);
-  font-family: var(--font-mono);
-  font-size: 1.2rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 0.2rem;
+width: 44px;
+height: 44px;
+border-radius: 2px;
+border: 1px solid var(--success);
+color: var(--success);
+font-family: var(--font-mono);
+font-size: 1.2rem;
+font-weight: 700;
+display: flex;
+align-items: center;
+justify-content: center;
+margin-bottom: 0.2rem;
 }
-
 .success__title {
-  font-family: var(--font-mono);
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text);
+font-family: var(--font-mono);
+font-size: 1rem;
+font-weight: 600;
+color: var(--text);
 }
-
 .success__sub {
-  font-size: 0.78rem;
-  color: var(--text-muted);
+font-size: 0.78rem;
+color: var(--text-muted);
 }
-
 .success__ids {
-  width: 100%;
-  border: 1px solid var(--border);
-  border-radius: 2px;
-  overflow: hidden;
-  margin-top: 0.4rem;
+width: 100%;
+border: 1px solid var(--border);
+border-radius: 2px;
+overflow: hidden;
+margin-top: 0.4rem;
 }
-
 .id-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.55rem 1rem;
-  border-bottom: 1px solid var(--border);
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 0.55rem 1rem;
+border-bottom: 1px solid var(--border);
 }
-
 .id-row:last-child {
-  border-bottom: none;
+border-bottom: none;
 }
-
 .id-label {
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-muted);
+font-family: var(--font-mono);
+font-size: 0.6rem;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+color: var(--text-muted);
 }
-
 .id-val {
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  font-weight: 600;
-  color: var(--accent);
-  word-break: break-all;
-  text-align: right;
-  max-width: 60%;
+font-family: var(--font-mono);
+font-size: 0.68rem;
+font-weight: 600;
+color: var(--accent);
+word-break: break-all;
+text-align: right;
+max-width: 60%;
 }
-
 /* ── Toast ───────────────────────────────────────────────── */
 .toast {
-  position: fixed;
-  bottom: 28px;
-  left: 50%;
-  transform: translateX(-50%) translateY(16px);
-  padding: 10px 24px;
-  border-radius: 2px;
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #fff;
-  background: var(--success);
-  opacity: 0;
-  transition:
-    opacity 0.3s ease,
-    transform 0.3s ease;
-  z-index: 999;
-  white-space: nowrap;
-  pointer-events: none;
+position: fixed;
+bottom: 28px;
+left: 50%;
+transform: translateX(-50%) translateY(16px);
+padding: 10px 24px;
+border-radius: 2px;
+font-family: var(--font-mono);
+font-size: 0.68rem;
+font-weight: 600;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+color: #fff;
+background: var(--success);
+opacity: 0;
+transition:
+opacity 0.3s ease,
+transform 0.3s ease;
+z-index: 999;
+white-space: nowrap;
+pointer-events: none;
 }
-
 .toast.toast--visible {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
+opacity: 1;
+transform: translateX(-50%) translateY(0);
 }
-
 .toast.toast--error {
-  background: var(--error);
+background: var(--error);
 }
-
 /* ══════════════════════════════════════════════════════════
-   RESPONSIVE — Tablet (≤ 600px) & Mobile (≤ 420px)
-   ══════════════════════════════════════════════════════════ */
-
+RESPONSIVE — Tablet (≤ 600px) & Mobile (≤ 420px)
+══════════════════════════════════════════════════════════ */
 @media (max-width: 600px) {
-
-  /* ── Card fills viewport width ── */
-  .form-card {
-    max-width: 100%;
-    border-left: none;
-    border-right: none;
-    border-radius: 0;
-  }
-
-  /* ── Page padding collapses ── */
-  .page {
-    padding-top: var(--topbar-h);
-    align-items: flex-start;
-  }
-
-  /* ── Card header tightens ── */
-  .card-head {
-    padding: 1rem 1.2rem 0;
-  }
-
-  .page-title {
-    font-size: 0.95rem;
-    margin-bottom: 0.8rem;
-  }
-
-  /* ── Tabs labels slightly smaller ── */
-  .tab {
-    font-size: 0.6rem;
-    letter-spacing: 0.06em;
-    padding: 0.5rem 0;
-  }
-
-  /* ── Card body padding ── */
-  .card-body {
-    padding: 1.1rem 1.2rem 1.3rem;
-  }
-
-  /* ── All pair rows become single-column ── */
-  .frow.pair {
-    grid-template-columns: 1fr;
-  }
-
-  /* ── Submit button: full width ── */
-  .btn-submit {
-    font-size: 0.68rem;
-    padding: 0.72rem;
-  }
-
-  /* ── Success IDs readable on small screens ── */
-  .id-val {
-    font-size: 0.6rem;
-    max-width: 55%;
-  }
-
-  /* ── Topbar tighter ── */
-  .topbar {
-    padding: 0 1.2rem;
-  }
-
-  .topbar__brand {
-    font-size: 0.62rem;
-    letter-spacing: 0.14em;
-  }
-}
-
-@media (max-width: 420px) {
-  .card-body {
-    padding: 1rem;
-  }
-
-  .frow {
-    gap: 0.7rem;
-  }
-
-  /* File drop area — touch-friendly height */
-  .file-drop {
-    padding: 1rem;
-  }
-
-  /* Larger touch targets for selects */
-  .fselect,
-  .finput {
-    padding: 0.75rem 0.8rem;
-  }
-}
-
-/* ── Tab switch animation ─────────────────────────────────
-   The card smoothly resizes as the renew form is taller.
-   Each form panel fades + lifts in. The card height
-   transitions via max-height on .card-body.
-   ──────────────────────────────────────────────────────── */
-
+/* ── Card fills viewport width ── */
 .form-card {
-  /* Allow height to animate when switching tabs */
-  transition: box-shadow 1s ease;
+max-width: 100%;
+border-left: none;
+border-right: none;
+border-radius: 0;
 }
-
+/* ── Page padding collapses ── */
+.page {
+padding-top: var(--topbar-h);
+align-items: flex-start;
+}
+/* ── Card header tightens ── */
+.card-head {
+padding: 1rem 1.2rem 0;
+}
+.page-title {
+font-size: 0.95rem;
+margin-bottom: 0.8rem;
+}
+/* ── Tabs labels slightly smaller ── */
+.tab {
+font-size: 0.6rem;
+letter-spacing: 0.06em;
+padding: 0.5rem 0;
+}
+/* ── Card body padding ── */
 .card-body {
-  /* Overflow visible so content isn't clipped during resize */
-  overflow: hidden;
+padding: 1.1rem 1.2rem 1.3rem;
 }
-
+/* ── All pair rows become single-column ── */
+.frow.pair {
+grid-template-columns: 1fr;
+}
+/* ── Submit button: full width ── */
+.btn-submit {
+font-size: 0.68rem;
+padding: 0.72rem;
+}
+/* ── Success IDs readable on small screens ── */
+.id-val {
+font-size: 0.6rem;
+max-width: 55%;
+}
+/* ── Topbar tighter ── */
+.topbar {
+padding: 0 1.2rem;
+}
+.topbar__brand {
+font-size: 0.62rem;
+letter-spacing: 0.14em;
+}
+}
+@media (max-width: 420px) {
+.card-body {
+padding: 1rem;
+}
+.frow {
+gap: 0.7rem;
+}
+/* File drop area — touch-friendly height */
+.file-drop {
+padding: 1rem;
+}
+/* Larger touch targets for selects */
+.fselect,
+.finput {
+padding: 0.75rem 0.8rem;
+}
+}
+/* ── Tab switch animation ─────────────────────────────────
+The card smoothly resizes as the renew form is taller.
+Each form panel fades + lifts in. The card height
+transitions via max-height on .card-body.
+──────────────────────────────────────────────────────── */
+.form-card {
+/* Allow height to animate when switching tabs */
+transition: box-shadow 1s ease;
+}
+.card-body {
+/* Overflow visible so content isn't clipped during resize */
+overflow: hidden;
+}
 /* Panels animate in when they become visible.
-   The .hidden class is toggled by JS; we add the animation
-   to the non-hidden state via a CSS animation. */
+The .hidden class is toggled by JS; we add the animation
+to the non-hidden state via a CSS animation. */
 .form-panel {
-  animation: panelIn 1.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+animation: panelIn 1.5s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
-
 /* Outgoing panel fades out fast, then hidden */
 .form-panel.hiding {
-  animation: panelOut 0.8s cubic-bezier(0.4, 0, 0.2, 1) both;
-  pointer-events: none;
+animation: panelOut 0.8s cubic-bezier(0.4, 0, 0.2, 1) both;
+pointer-events: none;
 }
-
 @keyframes panelIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+from {
+opacity: 0;
+transform: translateY(10px);
 }
-
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
 @keyframes panelOut {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  to {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
+from {
+opacity: 1;
+transform: translateY(0);
+}
+to {
+opacity: 0;
+transform: translateY(-6px);
+}
 }

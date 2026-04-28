@@ -1,177 +1,154 @@
-/* dotnav css */
-
 @import url("variables.css");
-
 /* ── Topbar ──────────────────────────────────────────────── */
 .topbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: var(--topbar-h);
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 2rem;
-  z-index: 200;
+position: fixed;
+top: 0;
+left: 0;
+right: 0;
+height: var(--topbar-h);
+background: var(--surface);
+border-bottom: 1px solid var(--border);
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 0 2rem;
+z-index: 200;
 }
-
 .topbar__brand {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--accent);
+font-family: var(--font-mono);
+font-size: 0.72rem;
+font-weight: 600;
+letter-spacing: 0.2em;
+text-transform: uppercase;
+color: var(--accent);
 }
-
 .topbar__back {
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  color: var(--text-muted);
-  text-decoration: none;
-  letter-spacing: 0.06em;
-  transition: color var(--tr);
+font-family: var(--font-mono);
+font-size: 0.68rem;
+color: var(--text-muted);
+text-decoration: none;
+letter-spacing: 0.06em;
+transition: color var(--tr);
 }
 .topbar__back:hover {
-  color: var(--accent);
+color: var(--accent);
 }
-
 /* ── Dot nav ─────────────────────────────────────────────── */
 .dot-nav {
-  position: fixed;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  height: var(--topbar-h); /* sits inside the topbar row */
-  display: flex;
-  align-items: center;
-  gap: 28px;
-  z-index: 300; /* above topbar */
+position: fixed;
+top: 0;
+left: 50%;
+transform: translateX(-50%);
+height: var(--topbar-h); /* sits inside the topbar row */
+display: flex;
+align-items: center;
+gap: 28px;
+z-index: 300; /* above topbar */
 }
-
 /* Each item is a stacked dot + label */
 .dot-nav__item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  position: relative;
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 3px;
+position: relative;
 }
-
 /*
- * The anchor fills a large invisible hit area so the link
- * always registers regardless of how small the visible dot gets.
- * The visible dot is a ::before pseudo-element that animates.
- */
+* The anchor fills a large invisible hit area so the link
+* always registers regardless of how small the visible dot gets.
+* The visible dot is a ::before pseudo-element that animates.
+*/
 .dot-nav__dot {
-  /* Large invisible hitbox */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  text-decoration: none;
-  cursor: pointer;
-  /* No background, no border — purely a click target */
+/* Large invisible hitbox */
+display: flex;
+align-items: center;
+justify-content: center;
+width: 22px;
+height: 22px;
+text-decoration: none;
+cursor: pointer;
+/* No background, no border — purely a click target */
 }
-
 /* Visible dot drawn as ::before so it can scale independently */
 .dot-nav__dot::before {
-  content: "";
-  display: block;
-  width: 20px;
-  height: 20px;
-
-  border-radius: 50%;
-  background: var(--border);
-  border: 1px solid var(--text-muted);
-  transition:
-    background var(--tr),
-    border-color var(--tr),
-    transform var(--tr);
-  /* scale does NOT affect the anchor's clickable area */
+content: "";
+display: block;
+width: 20px;
+height: 20px;
+border-radius: 50%;
+background: var(--border);
+border: 1px solid var(--text-muted);
+transition:
+background var(--tr),
+border-color var(--tr),
+transform var(--tr);
+/* scale does NOT affect the anchor's clickable area */
 }
-
 .dot-nav__dot:hover::before {
-  background: var(--accent);
-  border-color: var(--accent);
-  transform: scale(1.5);
+background: var(--accent);
+border-color: var(--accent);
+transform: scale(1.5);
 }
-
 /* Persistent label — always visible, no opacity toggle */
 .dot-nav__label {
-  font-family: var(--font-mono);
-  font-size: 0.52rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  white-space: nowrap;
-  pointer-events: none;
-  transition: color var(--tr);
-  line-height: 2;
+font-family: var(--font-mono);
+font-size: 0.52rem;
+font-weight: 600;
+letter-spacing: 0.12em;
+text-transform: uppercase;
+color: var(--text-muted);
+white-space: nowrap;
+pointer-events: none;
+transition: color var(--tr);
+line-height: 2;
 }
-
 .dot-nav__item:hover .dot-nav__label {
-  color: var(--accent);
+color: var(--accent);
 }
-
 /* ══════════════════════════════════════════════════════════
-   RESPONSIVE — Tablet & Mobile
-   ══════════════════════════════════════════════════════════ */
-
+RESPONSIVE — Tablet & Mobile
+══════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
-  .topbar {
-    padding: 0 1rem;
-  }
-
-  /* Pin dot nav to the right edge — no more overlap with logo */
-  .dot-nav {
-    left: auto;
-    right: 1rem;
-    transform: none;
-    gap: 20px;
-  }
-
-  /* Bigger dots */
-  .dot-nav__dot {
-    width: 28px;
-    height: 28px;
-  }
-
-  .dot-nav__dot::before {
-    width: 22px;
-    height: 22px;
-    border-width: 2px;
-  }
-
-  /* Labels always visible and legible */
-  .dot-nav__label {
-    display: block;
-    font-size: 0.5rem;
-    letter-spacing: 0.1em;
-  }
+.topbar {
+padding: 0 1rem;
 }
-
+/* Pin dot nav to the right edge — no more overlap with logo */
+.dot-nav {
+left: auto;
+right: 1rem;
+transform: none;
+gap: 20px;
+}
+/* Bigger dots */
+.dot-nav__dot {
+width: 28px;
+height: 28px;
+}
+.dot-nav__dot::before {
+width: 22px;
+height: 22px;
+border-width: 2px;
+}
+/* Labels always visible and legible */
+.dot-nav__label {
+display: block;
+font-size: 0.5rem;
+letter-spacing: 0.1em;
+}
+}
 @media (max-width: 480px) {
-  .topbar {
-    padding: 0 0.75rem;
-  }
-
-  .dot-nav {
-    right: 0.75rem;
-    gap: 16px;
-  }
-
-  .dot-nav__dot::before {
-    width: 20px;
-    height: 20px;
-  }
-
-  .dot-nav__label {
-    font-size: 0.46rem;
-  }
+.topbar {
+padding: 0 0.75rem;
+}
+.dot-nav {
+right: 0.75rem;
+gap: 16px;
+}
+.dot-nav__dot::before {
+width: 20px;
+height: 20px;
+}
+.dot-nav__label {
+font-size: 0.46rem;
+}
 }
