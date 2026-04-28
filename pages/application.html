@@ -51,6 +51,9 @@
           <button class="tab" id="tab-renew" onclick="switchTab('renew')">
             Renew / Replace
           </button>
+          <button class="tab" id="tab-signup" onclick="switchTab('signup')">
+            Sign Up
+          </button>
         </div>
       </div>
 
@@ -203,6 +206,130 @@
             Submit Renewal
           </button>
         </form>
+        <!-- ── SIGN UP FORM ── -->
+        <form class="form-panel hidden" id="form-signup" novalidate>
+
+          <!-- Role selector -->
+          <div class="role-grid">
+            <label class="role-card selected" id="card-citizen" for="su-role-citizen">
+              <input type="radio" name="su-role" id="su-role-citizen" value="citizen" checked />
+              <span class="role-name">Citizen</span>
+              <span class="role-desc">Apply for or renew your driver's licence</span>
+            </label>
+            <label class="role-card" id="card-official" for="su-role-official">
+              <input type="radio" name="su-role" id="su-role-official" value="official" />
+              <span class="role-name">Official</span>
+              <span class="role-desc">Police, government or licensing authority</span>
+            </label>
+          </div>
+
+          <!-- Shared fields -->
+          <div class="frow">
+            <div class="fgroup">
+              <label class="flabel" for="su-name">Full Name</label>
+              <input class="finput" id="su-name" type="text" placeholder="Jane Doe" />
+              <span class="ferror" id="err-su-name"></span>
+            </div>
+          </div>
+
+          <div class="frow pair">
+            <div class="fgroup">
+              <label class="flabel" for="su-email">Email</label>
+              <input class="finput" id="su-email" type="email" placeholder="jane@example.com" />
+              <span class="ferror" id="err-su-email"></span>
+            </div>
+            <div class="fgroup">
+              <label class="flabel" for="su-phone">Phone</label>
+              <input class="finput" id="su-phone" type="tel" placeholder="876-000-0000" maxlength="12" />
+              <span class="ferror" id="err-su-phone"></span>
+            </div>
+          </div>
+
+          <div class="frow pair">
+            <div class="fgroup">
+              <label class="flabel" for="su-trn">TRN</label>
+              <input class="finput" id="su-trn" type="text" placeholder="000-000-000" maxlength="11" />
+              <span class="ferror" id="err-su-trn"></span>
+            </div>
+            <div class="fgroup">
+              <label class="flabel" for="su-dob">Date of Birth</label>
+              <input class="finput" id="su-dob" type="date" />
+              <span class="ferror" id="err-su-dob"></span>
+            </div>
+          </div>
+
+          <!-- Official-only fields -->
+          <div class="official-fields hidden" id="official-fields">
+            <div class="frow pair">
+              <div class="fgroup">
+                <label class="flabel" for="su-org">Organisation</label>
+                <select class="fselect" id="su-org">
+                  <option value="" disabled selected>Select agency</option>
+                  <option value="jcf">Jamaica Constabulary Force</option>
+                  <option value="tax_admin">Tax Administration Jamaica</option>
+                  <option value="licensing">Licensing Authority</option>
+                  <option value="transport">Ministry of Transport</option>
+                  <option value="customs">Jamaica Customs Agency</option>
+                  <option value="other">Other Government Body</option>
+                </select>
+                <span class="ferror" id="err-su-org"></span>
+              </div>
+              <div class="fgroup">
+                <label class="flabel" for="su-rank">Rank / Title</label>
+                <input class="finput" id="su-rank" type="text" placeholder="e.g. Sergeant" />
+                <span class="ferror" id="err-su-rank"></span>
+              </div>
+            </div>
+            <div class="frow pair">
+              <div class="fgroup">
+                <label class="flabel" for="su-badge">Badge / Staff ID</label>
+                <input class="finput" id="su-badge" type="text" placeholder="ID-000000" />
+                <span class="ferror" id="err-su-badge"></span>
+              </div>
+              <div class="fgroup">
+                <label class="flabel" for="su-dept">Department / Station</label>
+                <input class="finput" id="su-dept" type="text" placeholder="e.g. Half Way Tree" />
+                <span class="ferror" id="err-su-dept"></span>
+              </div>
+            </div>
+            <div class="frow">
+              <div class="fgroup">
+                <label class="flabel" for="su-auth-code">Authorization Code</label>
+                <input class="finput" id="su-auth-code" type="text" placeholder="Provided by your supervisor" />
+                <span class="ferror" id="err-su-auth-code"></span>
+              </div>
+            </div>
+            <div class="official-note">
+              Official accounts require supervisor verification before full access is granted. You will receive an email once approved.
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div class="frow pair">
+            <div class="fgroup">
+              <label class="flabel" for="su-pass">Password</label>
+              <input class="finput" id="su-pass" type="password" placeholder="Min. 8 characters" />
+              <div class="strength-bar" id="strength-bar">
+                <div class="strength-seg" id="seg-1"></div>
+                <div class="strength-seg" id="seg-2"></div>
+                <div class="strength-seg" id="seg-3"></div>
+                <div class="strength-seg" id="seg-4"></div>
+              </div>
+              <span class="strength-label" id="strength-label"></span>
+              <span class="ferror" id="err-su-pass"></span>
+            </div>
+            <div class="fgroup">
+              <label class="flabel" for="su-confirm">Confirm Password</label>
+              <input class="finput" id="su-confirm" type="password" placeholder="Repeat password" />
+              <span class="ferror" id="err-su-confirm"></span>
+            </div>
+          </div>
+
+          <button class="btn-submit" type="submit" id="signup-btn">
+            Create Account
+          </button>
+        </form>
+
       </div>
       <!-- /card-body -->
     </div>

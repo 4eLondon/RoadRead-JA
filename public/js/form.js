@@ -1,4 +1,3 @@
-
 // form js file
 
 import { supabase } from "./dataconnect.js";
@@ -17,43 +16,36 @@ function uuid() {
 // Fade out current panel, then fade in the next one.
 
 window.switchTab = function (type) {
-  const isRenew = type === "renew";
-  const outPanel = document.getElementById(
-    isRenew ? "form-apply" : "form-renew",
-  );
-  const inPanel = document.getElementById(
-    isRenew ? "form-renew" : "form-apply",
-  );
+  const tabs = ["apply", "renew", "signup"];
+  tabs.forEach((t) => {
+    document.getElementById("tab-" + t)?.classList.toggle("active", t === type);
+    const panel = document.getElementById("form-" + t);
+    if (!panel) return;
+    if (t === type) {
+      panel.classList.remove("hidden");
+    } else {
+      if (!panel.classList.contains("hidden")) {
+        panel.classList.add("hiding");
+        panel.addEventListener(
+          "animationend",
+          () => {
+            panel.classList.add("hidden");
+            panel.classList.remove("hiding");
+          },
+          { once: true }
+        );
+      }
+    }
+  });
 
-  document.getElementById("tab-apply").classList.toggle("active", !isRenew);
-  document.getElementById("tab-renew").classList.toggle("active", isRenew);
-  document.getElementById("page-title").textContent = isRenew
-    ? "Renew / Replace"
-    : "New Application";
+  const titles = { apply: "New Application", renew: "Renew / Replace", signup: "Sign Up" };
+  document.getElementById("page-title").textContent = titles[type] || "New Application";
   document.getElementById("success-panel").classList.add("hidden");
-
-  if (outPanel.classList.contains("hidden")) {
-    // Nothing visible yet — just show the target
-    inPanel.classList.remove("hidden");
-    return;
-  }
-
-  // Play out-animation, then swap
-  outPanel.classList.add("hiding");
-  outPanel.addEventListener(
-    "animationend",
-    () => {
-      outPanel.classList.add("hidden");
-      outPanel.classList.remove("hiding");
-      inPanel.classList.remove("hidden");
-    },
-    { once: true },
-  );
 };
 
-// Open on correct tab from URL: /apply?type=renew
+// Open on correct tab from URL: /apply?type=renew or ?type=signup
 const urlType = new URLSearchParams(window.location.search).get("type");
-if (urlType === "renew") switchTab("renew");
+if (urlType === "renew" || urlType === "signup") switchTab(urlType);
 
 // ── Field error helpers ────────────────────────────────────
 
@@ -256,4 +248,157 @@ document.getElementById("r-file")?.addEventListener("change", (e) => {
     label.textContent = "Click to upload or drag & drop — PDF, JPG, PNG";
     drop.classList.remove("file-drop--has-file");
   }
+});
+
+// ── SIGNUP role toggle ─────────────────────────────────────
+
+const cardCitizen = document.getElementById("card-citizen");
+const cardOfficial = document.getElementById("card-official");
+const officialFields = document.getElementById("official-fields");
+const signupBtn = document.getElementById("signup-btn");
+
+function getSignupRole() {
+  return document.querySelector('input[name="su-role"]:checked')?.value || "citizen";
+}
+
+function updateSignupRole() {
+  const isOfficial = getSignupRole() === "official";
+  cardCitizen?.classList.toggle("selected", !isOfficial);
+  cardOfficial?.classList.toggle("selected", isOfficial);
+  if (officialFields) {
+    officialFields.classList.toggle("hidden", !isOfficial);
+  }
+  if (signupBtn) {
+    signupBtn.textContent = isOfficial ? "Request Official Account" : "Create Account";
+  }
+}
+
+document.querySelectorAll('input[name="su-role"]').forEach((r) =>
+  r.addEventListener("change", updateSignupRole)
+);
+[cardCitizen, cardOfficial].forEach((card) => {
+  card?.addEventListener("click", () => {
+    const radio = card.querySelector('input[type="radio"]');
+    if (radio) { radio.checked = true; updateSignupRole(); }
+  });
+});
+
+// ── Password strength ──────────────────────────────────────
+
+document.getElementById("su-pass")?.addEventListener("input", function () {
+  const p = this.value;
+  let score = 0;
+  if (p.length >= 8) score++;
+  if (p.length >= 12) score++;
+  if (/[A-Z]/.test(p) && /[a-z]/.test(p)) score++;
+  if (/\d/.test(p)) score++;
+  if (/[^A-Za-z0-9]/.test(p)) score++;
+  score = Math.min(4, score);
+
+  const fillClass = ["", "fill-weak", "fill-fair", "fill-good", "fill-strong"][score];
+  const labels = ["", "Weak", "Fair", "Good", "Strong"];
+  [1, 2, 3, 4].forEach((i) => {
+    const seg = document.getElementById("seg-" + i);
+    if (seg) { seg.className = "strength-seg" + (i <= score ? " " + fillClass : ""); }
+  });
+  const lbl = document.getElementById("strength-label");
+  if (lbl) lbl.textContent = p ? labels[score] : "";
+});
+
+// ── SIGNUP form submit ─────────────────────────────────────
+
+document.getElementById("form-signup")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const role = getSignupRole();
+  const isOfficial = role === "official";
+
+  // Clear all errors
+  ["su-name","su-email","su-phone","su-trn","su-dob","su-pass","su-confirm",
+   "su-org","su-rank","su-badge","su-auth-code"].forEach((id) => setErr("err-" + id, ""));
+
+  let ok = validate([
+    ["su-name",  "err-su-name",  "Full name is required."],
+    ["su-email", "err-su-email", "Email is required."],
+    ["su-phone", "err-su-phone", "Phone is required."],
+    ["su-trn",   "err-su-trn",   "TRN is required."],
+    ["su-dob",   "err-su-dob",   "Date of birth is required."],
+  ]);
+
+  const pass = document.getElementById("su-pass")?.value || "";
+  const confirm = document.getElementById("su-confirm")?.value || "";
+
+  if (!pass || pass.length < 8) {
+    setErr("err-su-pass", "Password must be at least 8 characters.");
+    ok = false;
+  }
+  if (pass && pass !== confirm) {
+    setErr("err-su-confirm", "Passwords do not match.");
+    ok = false;
+  }
+
+  if (isOfficial) {
+    ok = validate([
+      ["su-org",       "err-su-org",       "Organisation is required."],
+      ["su-rank",      "err-su-rank",       "Rank / Title is required."],
+      ["su-badge",     "err-su-badge",      "Badge / Staff ID is required."],
+      ["su-auth-code", "err-su-auth-code",  "Authorization code is required."],
+    ]) && ok;
+  }
+
+  if (!ok) return;
+
+  setBtnLoading("signup-btn", true, isOfficial ? "Request Official Account" : "Create Account");
+
+  // Supabase auth signup
+  const { data: authData, error: authErr } = await supabase.auth.signUp({
+    email: document.getElementById("su-email").value.trim(),
+    password: pass,
+    options: { data: { full_name: document.getElementById("su-name").value.trim(), role } },
+  });
+
+  if (authErr) {
+    setBtnLoading("signup-btn", false, isOfficial ? "Request Official Account" : "Create Account");
+    showToast(authErr.message, true);
+    return;
+  }
+
+  const userId = authData?.user?.id || uuid();
+
+  const profilePayload = {
+    id: userId,
+    full_name: document.getElementById("su-name").value.trim(),
+    email: document.getElementById("su-email").value.trim(),
+    TRN: document.getElementById("su-trn").value.trim(),
+    date_of_birth: document.getElementById("su-dob").value,
+    phone: document.getElementById("su-phone").value.trim(),
+    role,
+    status: isOfficial ? "pending_approval" : "active",
+  };
+
+  if (isOfficial) {
+    profilePayload.organisation = document.getElementById("su-org").value;
+    profilePayload.rank         = document.getElementById("su-rank").value.trim();
+    profilePayload.badge_id     = document.getElementById("su-badge").value.trim();
+    profilePayload.department   = document.getElementById("su-dept")?.value.trim() || "";
+    profilePayload.auth_code    = document.getElementById("su-auth-code").value.trim();
+  }
+
+  const { error: profileErr } = await supabase.from("users").insert(profilePayload);
+  if (profileErr) console.warn("profile insert:", profileErr.message);
+
+  setBtnLoading("signup-btn", false, isOfficial ? "Request Official Account" : "Create Account");
+
+  showToast(isOfficial ? "Official account request submitted!" : "Account created successfully!");
+  showSuccess(
+    isOfficial ? "Request Submitted" : "Account Created",
+    "—",
+    userId
+  );
+
+  // Update success panel text for signup context
+  const sub = document.getElementById("success-panel")?.querySelector(".success__sub");
+  if (sub) sub.textContent = isOfficial
+    ? "Your official account is pending supervisor approval. Check your email for updates."
+    : "Your account is active. You can now sign in.";
 });
