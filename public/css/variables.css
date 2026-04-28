@@ -62,3 +62,25 @@
   --error:   #c94444;
   --success: #3d9970;
 }
+
+/* ── Light mode ─────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg:        #eae8e0;
+  --surface:   #f5f4f0;
+  --surface-2: #e5e3db;
+  --border:    #c5c3bb;
+  
+  /* Yellow stays brighter in light mode */
+  --green:     #e6b800; 
+  --green-dim: #c49a00;
+  
+  --accent:      #025a2b;
+  --accent-dim:  #013d1d;
+  
+  --text:        #2a2825;
+  --text-muted:  #6a6865;
+  --text-subtle: #969490;
+  
+  --error:   #b53d3d;
+  --success: #368a66;
+}
