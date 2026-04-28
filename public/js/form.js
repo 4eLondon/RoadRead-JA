@@ -1,14 +1,5 @@
-/*
- * formScript.js
- *
- * Handles:
- *  1. Tab switching between Apply and Renew forms
- *  2. ?type=renew URL param to open directly on the renewal form
- *  3. Validation for both forms
- *  4. Generating random application_id and user_id (UUID v4)
- *  5. Submitting to Supabase (users + applications tables)
- *  6. File upload label update
- */
+
+// form js file
 
 import { supabase } from "./dataconnect.js";
 // ── UUID generator ─────────────────────────────────────────

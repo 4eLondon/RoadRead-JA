@@ -1,14 +1,4 @@
-/*
- * dashboard.js
- *
- * 1. Auth guard
- * 2. Populate user info
- * 3. Persistent activity log — stored in Supabase `activity_log` table
- *    - Survives logout/login
- *    - No duplicate sign-in spam from tab switching
- * 4. Notification drawer
- * 5. Sign out
- */
+// Dashbaord js file
 
 import { supabase } from "./dataconnect.js";
 

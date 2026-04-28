@@ -1,3 +1,5 @@
+// auth js file
+
 import { supabase } from "./dataconnect.js";
 
 // ── Elements ───────────────────────────────────────────────

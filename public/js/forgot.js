@@ -1,11 +1,4 @@
-/*
- * forgot.js
- *
- *   Step 1 (step-email)   – User enters email, clicks "Send Reset Link"
- *   Step 2 (step-confirm) – "Check your email" holding screen + toast
- *   Step 3 (step-reset)   – New password form (shown when token detected in URL)
- *   Step 4 (step-success) – Password updated confirmation
- */
+// forgot.js
 
 import { supabase } from "./dataconnect.js";
 

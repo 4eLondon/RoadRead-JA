@@ -1,10 +1,5 @@
-/*
- * script.js — Road Ready JA homepage
- *
- * 1. Smooth scroll for all anchor links (navbar + footer)
- * 2. Active nav highlight based on scroll position
- * 3. Contact form — client-side validation + mailto launch
- */
+//script js file
+
 
 // ── Smooth scroll ──────────────────────────────────────────
 document.querySelectorAll('a[href^="#"]').forEach((link) => {
