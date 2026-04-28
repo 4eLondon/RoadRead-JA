@@ -1,3 +1,5 @@
+//theme js file
+
 (function() {
   const STORAGE_KEY = 'rrja-theme';
   const THEME_ATTR = 'data-theme';

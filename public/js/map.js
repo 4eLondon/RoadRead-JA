@@ -1,3 +1,5 @@
+// map js file
+
 // Map initialization and location handling
 document.addEventListener('DOMContentLoaded', function() {
     // ── Map init ───────────────────────────────────────────
