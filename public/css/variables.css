@@ -49,11 +49,11 @@
   --border:    #d0d0c8;
   
   /* Yellow stays brighter in light mode */
-  --accent:     #f7c901; 
-  --accent-dim: #d4a800;
+  --green:     #f7c901; 
+  --green-dim: #d4a800;
   
-  --green:      #026330;
-  --green-dim:  #014421;
+ --accent:      #026330;
+  --accent-dim:  #014421;
   
   --text:        #1a1a1a;
   --text-muted:  #5a5a5a;
