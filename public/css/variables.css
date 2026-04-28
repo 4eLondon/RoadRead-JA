@@ -17,9 +17,9 @@
   --green-dim:  #014421;
   
   /* Text */
-  --text:        #e8e3dc;
-  --text-muted:  #8a857e;
-  --text-subtle: #5a5550;
+    --text:        #f5f0e8;
+  --text-muted:  #b5b0a8;
+  --text-subtle: #8a8580;
   
   /* Semantic */
   --error:   #e05555;
