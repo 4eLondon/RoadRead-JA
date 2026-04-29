@@ -94,7 +94,7 @@
             </label>
           </div>
 
-          <!-- Citizen fields -->
+          <!-- Citizen fields (shown by default) -->
           <div id="citizen-fields">
             <div class="frow">
               <div class="fgroup">
@@ -333,6 +333,68 @@
   <div id="toast" class="toast"></div>
 
   <script src="/public/js/theme.js"></script>
+
+  <!-- Role toggle: runs immediately, no module dependency needed -->
+  <script>
+    // Tab switcher (needed globally for onclick= in HTML)
+    window.switchTab = function(type) {
+      const isRenew = type === 'renew';
+      const outPanel = document.getElementById(isRenew ? 'form-apply' : 'form-renew');
+      const inPanel  = document.getElementById(isRenew ? 'form-renew' : 'form-apply');
+
+      document.getElementById('tab-apply').classList.toggle('active', !isRenew);
+      document.getElementById('tab-renew').classList.toggle('active', isRenew);
+      document.getElementById('page-title').textContent = isRenew ? 'Renew / Replace' : 'New Application';
+      document.getElementById('success-panel').classList.add('hidden');
+
+      if (outPanel.classList.contains('hidden')) {
+        inPanel.classList.remove('hidden');
+        return;
+      }
+      outPanel.classList.add('hiding');
+      outPanel.addEventListener('animationend', () => {
+        outPanel.classList.add('hidden');
+        outPanel.classList.remove('hiding');
+        inPanel.classList.remove('hidden');
+      }, { once: true });
+    };
+
+    // Role toggle for apply form
+    function updateApplyRole() {
+      const isOfficial = document.querySelector('input[name="apply-role"]:checked')?.value === 'official';
+      document.getElementById('card-citizen').classList.toggle('selected', !isOfficial);
+      document.getElementById('card-official').classList.toggle('selected', isOfficial);
+      document.getElementById('citizen-fields').classList.toggle('hidden', isOfficial);
+      document.getElementById('official-fields').classList.toggle('hidden', !isOfficial);
+      document.getElementById('apply-btn').textContent = isOfficial
+        ? 'Request Official Account'
+        : 'Submit Application';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // Wire up radio buttons
+      document.querySelectorAll('input[name="apply-role"]').forEach(function(r) {
+        r.addEventListener('change', updateApplyRole);
+      });
+
+      // Wire up card clicks
+      ['card-citizen', 'card-official'].forEach(function(id) {
+        var card = document.getElementById(id);
+        card && card.addEventListener('click', function() {
+          var radio = card.querySelector('input[type="radio"]');
+          if (radio) { radio.checked = true; updateApplyRole(); }
+        });
+      });
+
+      // Run once on load to ensure correct initial state
+      updateApplyRole();
+
+      // URL param: /apply?type=renew
+      var urlType = new URLSearchParams(window.location.search).get('type');
+      if (urlType === 'renew') switchTab('renew');
+    });
+  </script>
+
   <script type="module" src="/public/js/form.js"></script>
 </body>
 
