@@ -71,8 +71,7 @@
   });
 
   // Expose to global scope for manual toggling
-  window.rrjaTheme = { set: setTheme, toggle: toggleTheme };
-
+window.rrjaTheme = { set: setTheme, toggle: toggleTheme, init: init };
   // Run immediately
   init();
 })();
