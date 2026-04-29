@@ -5,9 +5,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Log In / Register — Road Ready JA</title>
-   <link rel="icon" type="image/png" href="/public/images/favicon-32x32.png">
-   <link rel="stylesheet" href="/public/css/variables.css" />
- <link rel="stylesheet" href="/public/css/auth.css" />
+  <link rel="icon" type="image/png" href="/public/images/favicon-32x32.png">
+  <link rel="stylesheet" href="/public/css/variables.css" />
+  <link rel="stylesheet" href="/public/css/auth.css" />
   <link rel="stylesheet" href="/public/css/dotnav.css" />
 </head>
 
@@ -26,13 +26,16 @@
       <a class="dot-nav__dot" href="/#contact"></a>
       <span class="dot-nav__label">Contact</span>
     </div>
-    <button id="theme-toggle" class="theme-toggle" aria-label="Switch to light mode"></button>
+    <button id="theme-toggle" class="theme-toggle" aria-label="Switch to light mode">☀</button>
   </nav>
 
   <!-- Top bar -->
   <nav class="topbar">
-    <img src="/public/images/logo.png" style="width: 160px; height: auto" />
+    <img src="/public/images/logo.png" style="width: 160px; height: auto" alt="Road Ready JA logo" />
   </nav>
+
+  <!-- Toast notification -->
+  <div id="toast" class="toast" role="alert" aria-live="polite"></div>
 
   <div class="card" id="card">
     <!-- LEFT PANEL -->
@@ -67,45 +70,53 @@
 
     <!-- RIGHT PANEL -->
     <div class="panel panel-right">
+
       <!-- Register Form -->
-      <div class="form-wrap" id="form-register">
+      <form class="form-wrap" id="form-register" novalidate>
         <h1>Create Account</h1>
 
         <div class="field">
-          <input type="text" placeholder="Full Name" />
+          <input id="reg-name" type="text" name="full_name" placeholder="Full Name" autocomplete="name" />
+          <span class="field-error" id="err-reg-name"></span>
         </div>
         <div class="field">
-          <input type="email" placeholder="Email" />
+          <input id="reg-email" type="email" name="email" placeholder="Email" autocomplete="email" />
+          <span class="field-error" id="err-reg-email"></span>
         </div>
         <div class="field">
-          <input type="password" placeholder="Password" />
+          <input id="reg-pass" type="password" name="password" placeholder="Password" autocomplete="new-password" />
+          <span class="field-error" id="err-reg-pass"></span>
         </div>
         <div class="field">
-          <input type="password" placeholder="Confirm Password" />
+          <input id="reg-confirm" type="password" name="confirm_password" placeholder="Confirm Password" autocomplete="new-password" />
+          <span class="field-error" id="err-reg-confirm"></span>
         </div>
 
-        <button class="btn btn-main" id="signup-btn">Sign Up</button>
-      </div>
+        <button class="btn btn-main" id="signup-btn" type="submit">Sign Up</button>
+      </form>
 
       <!-- Login Form -->
-      <div class="form-wrap form-wrap--hidden" id="form-login">
+      <form class="form-wrap form-wrap--hidden" id="form-login" novalidate>
         <h1>Sign In</h1>
 
         <div class="field">
-          <input type="email" placeholder="Email" />
+          <input id="login-email" type="email" name="email" placeholder="Email" autocomplete="email" />
+          <span class="field-error" id="err-login-email"></span>
         </div>
         <div class="field">
-          <input type="password" placeholder="Password" />
+          <input id="login-pass" type="password" name="password" placeholder="Password" autocomplete="current-password" />
+          <span class="field-error" id="err-login-pass"></span>
         </div>
 
         <a class="forgot-link" href="/pages/forgot.html">Forgot your password?</a>
-        <button class="btn btn-main">Sign In</button>
-      </div>
+        <button class="btn btn-main" id="signin-btn" type="submit">Sign In</button>
+      </form>
+
     </div>
   </div>
 
-  <script type="module" src="/public/js/auth.js"></script>
   <script src="/public/js/theme.js"></script>
+  <script type="module" src="/public/js/auth.js"></script>
 </body>
 
 </html>

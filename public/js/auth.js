@@ -1,96 +1,77 @@
-// form js file
+// auth.js — Login / Register page
+// Handles: panel slide toggle, form submit stubs, toast
 
 import { supabase } from "./dataconnect.js";
-// ── UUID generator ─────────────────────────────────────────
 
-function uuid() {
-  return crypto.randomUUID
-    ? crypto.randomUUID()
-    : "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-        const r = (Math.random() * 16) | 0;
-        return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
-      });
-}
-
-// ── Tab switcher ───────────────────────────────────────────
-// Fade out current panel, then fade in the next one.
-
-window.switchTab = function (type) {
-  const isRenew = type === "renew";
-  const outPanel = document.getElementById(
-    isRenew ? "form-apply" : "form-renew",
-  );
-  const inPanel = document.getElementById(
-    isRenew ? "form-renew" : "form-apply",
-  );
-
-  document.getElementById("tab-apply").classList.toggle("active", !isRenew);
-  document.getElementById("tab-renew").classList.toggle("active", isRenew);
-  document.getElementById("page-title").textContent = isRenew
-    ? "Renew / Replace"
-    : "New Application";
-  document.getElementById("success-panel").classList.add("hidden");
-
-  if (outPanel.classList.contains("hidden")) {
-    // Nothing visible yet — just show the target
-    inPanel.classList.remove("hidden");
-    return;
+// ── Theme toggle icon ──────────────────────────────────────
+// theme.js sets data-theme; we just keep the button label in sync.
+(function syncThemeBtn() {
+  const btn = document.getElementById("theme-toggle");
+  if (!btn) return;
+  function update() {
+    const isDark = document.documentElement.getAttribute("data-theme") !== "light";
+    btn.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
+    btn.textContent = isDark ? "☀" : "☾";
   }
+  update();
+  // Re-sync whenever theme.js toggles the attribute
+  new MutationObserver(update).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-theme"],
+  });
+})();
 
-  // Play out-animation, then swap
-  outPanel.classList.add("hiding");
-  outPanel.addEventListener(
-    "animationend",
-    () => {
-      outPanel.classList.add("hidden");
-      outPanel.classList.remove("hiding");
-      inPanel.classList.remove("hidden");
-    },
-    { once: true },
-  );
-};
+// ── Panel / form toggle ────────────────────────────────────
 
-// Open on correct tab from URL: /apply?type=renew
-const urlType = new URLSearchParams(window.location.search).get("type");
-if (urlType === "renew") switchTab("renew");
+const card        = document.getElementById("card");
+const msgRegister = document.getElementById("msg-register");
+const msgLogin    = document.getElementById("msg-login");
+const formRegister = document.getElementById("form-register");
+const formLogin    = document.getElementById("form-login");
 
-// ── Field error helpers ────────────────────────────────────
-
-function setErr(id, msg) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = msg;
-  // Highlight the associated input/select
-  const field = el?.closest(".fgroup");
-  const input = field?.querySelector(".finput, .fselect");
-  if (input) input.style.borderColor = msg ? "var(--error)" : "";
+function showLogin() {
+  card.classList.add("is-login");
+  msgRegister.classList.add("panel-msg--hidden");
+  msgLogin.classList.remove("panel-msg--hidden");
+  formRegister.classList.add("form-wrap--hidden");
+  formLogin.classList.remove("form-wrap--hidden");
+  clearErrs(["err-login-email", "err-login-pass"]);
 }
 
-function clearErrs(ids) {
-  ids.forEach((id) => setErr(id, ""));
+function showRegister() {
+  card.classList.remove("is-login");
+  msgLogin.classList.add("panel-msg--hidden");
+  msgRegister.classList.remove("panel-msg--hidden");
+  formLogin.classList.add("form-wrap--hidden");
+  formRegister.classList.remove("form-wrap--hidden");
+  clearErrs(["err-reg-name", "err-reg-email", "err-reg-pass", "err-reg-confirm"]);
 }
 
-function validate(rules) {
-  let ok = true;
-  for (const [id, errId, msg] of rules) {
-    const el = document.getElementById(id);
-    const val = el?.value?.trim();
-    if (!val) {
-      setErr(errId, msg);
-      ok = false;
-    } else setErr(errId, "");
-  }
-  return ok;
-}
+document.getElementById("go-login")?.addEventListener("click", showLogin);
+document.getElementById("go-register")?.addEventListener("click", showRegister);
 
 // ── Toast ──────────────────────────────────────────────────
 
 function showToast(msg, isError = false) {
   const t = document.getElementById("toast");
+  if (!t) return;
   t.textContent = msg;
-  t.className = "toast toast--visible" + (isError ? " toast--error" : "");
-  setTimeout(() => {
-    t.className = "toast";
-  }, 3500);
+  t.className = "toast toast--visible" + (isError ? " toast--error" : " toast--success");
+  setTimeout(() => { t.className = "toast"; }, 3500);
+}
+
+// ── Field error helpers ────────────────────────────────────
+
+function setErr(id, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = msg;
+  const input = el.closest(".field")?.querySelector("input");
+  if (input) input.style.borderColor = msg ? "var(--error)" : "";
+}
+
+function clearErrs(ids) {
+  ids.forEach((id) => setErr(id, ""));
 }
 
 // ── Button loading state ───────────────────────────────────
@@ -99,254 +80,91 @@ function setBtnLoading(id, loading, label) {
   const btn = document.getElementById(id);
   if (!btn) return;
   btn.disabled = loading;
-  btn.textContent = loading ? "Submitting…" : label;
+  btn.textContent = loading ? "Please wait…" : label;
 }
 
-// ── Show success panel ─────────────────────────────────────
+// ── Register submit ────────────────────────────────────────
 
-function showSuccess(title, appId, userId) {
-  document.getElementById("form-apply").classList.add("hidden");
-  document.getElementById("form-renew").classList.add("hidden");
-
-  const panel = document.getElementById("success-panel");
-  panel.classList.remove("hidden");
-  document.getElementById("success-title").textContent = title;
-  document.getElementById("out-app-id").textContent = appId;
-  document.getElementById("out-user-id").textContent = userId;
-}
-
-// ── Apply form role toggle ─────────────────────────────────
-
-const cardCitizen = document.getElementById("card-citizen");
-const cardOfficial = document.getElementById("card-official");
-
-function getApplyRole() {
-  return document.querySelector('input[name="apply-role"]:checked')?.value || "citizen";
-}
-
-function updateApplyRole() {
-  const isOfficial = getApplyRole() === "official";
-  cardCitizen?.classList.toggle("selected", !isOfficial);
-  cardOfficial?.classList.toggle("selected", isOfficial);
-  document.getElementById("citizen-fields").classList.toggle("hidden", isOfficial);
-  document.getElementById("official-fields").classList.toggle("hidden", !isOfficial);
-  document.getElementById("apply-btn").textContent = isOfficial
-    ? "Request Official Account"
-    : "Submit Application";
-}
-
-document.querySelectorAll('input[name="apply-role"]').forEach((r) =>
-  r.addEventListener("change", updateApplyRole)
-);
-[cardCitizen, cardOfficial].forEach((card) => {
-  card?.addEventListener("click", () => {
-    const radio = card.querySelector('input[type="radio"]');
-    if (radio) { radio.checked = true; updateApplyRole(); }
-  });
-});
-updateApplyRole(); // sync on load
-
-// ── Password strength helper ───────────────────────────────
-
-function attachStrength(inputId, segPrefix, labelId) {
-  document.getElementById(inputId)?.addEventListener("input", function () {
-    const p = this.value;
-    let score = 0;
-    if (p.length >= 8) score++;
-    if (p.length >= 12) score++;
-    if (/[A-Z]/.test(p) && /[a-z]/.test(p)) score++;
-    if (/\d/.test(p)) score++;
-    if (/[^A-Za-z0-9]/.test(p)) score++;
-    score = Math.min(4, score);
-    const fillClass = ["", "fill-weak", "fill-fair", "fill-good", "fill-strong"][score];
-    const labels = ["", "Weak", "Fair", "Good", "Strong"];
-    [1, 2, 3, 4].forEach((i) => {
-      const seg = document.getElementById(segPrefix + i);
-      if (seg) seg.className = "strength-seg" + (i <= score ? " " + fillClass : "");
-    });
-    const lbl = document.getElementById(labelId);
-    if (lbl) lbl.textContent = p ? labels[score] : "";
-  });
-}
-
-attachStrength("a-pass", "a-seg-", "a-strength-label");
-attachStrength("o-pass", "o-seg-", "o-strength-label");
-
-// ── APPLY form submit ──────────────────────────────────────
-
-document.getElementById("form-apply").addEventListener("submit", async (e) => {
+document.getElementById("form-register")?.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const isOfficial = getApplyRole() === "official";
 
-  let ok;
-  if (!isOfficial) {
-    ok = validate([
-      ["a-name",    "err-a-name",    "Full name is required."],
-      ["a-email",   "err-a-email",   "Email is required."],
-      ["a-trn",     "err-a-trn",     "TRN is required."],
-      ["a-dob",     "err-a-dob",     "Date of birth is required."],
-      ["a-phone",   "err-a-phone",   "Phone number is required."],
-    ]);
-    const pass = document.getElementById("a-pass").value;
-    const confirm = document.getElementById("a-confirm").value;
-    if (!pass || pass.length < 8) { setErr("err-a-pass", "Password must be at least 8 characters."); ok = false; }
-    else setErr("err-a-pass", "");
-    if (pass && pass !== confirm) { setErr("err-a-confirm", "Passwords do not match."); ok = false; }
-    else if (pass) setErr("err-a-confirm", "");
-  } else {
-    ok = validate([
-      ["o-name",      "err-o-name",      "Full name is required."],
-      ["o-email",     "err-o-email",     "Email is required."],
-      ["o-trn",       "err-o-trn",       "TRN is required."],
-      ["o-org",       "err-o-org",       "Organisation is required."],
-      ["o-rank",      "err-o-rank",      "Rank / Title is required."],
-      ["o-badge",     "err-o-badge",     "Badge / Staff ID is required."],
-      ["o-auth-code", "err-o-auth-code", "Authorization code is required."],
-    ]);
-    const pass = document.getElementById("o-pass").value;
-    const confirm = document.getElementById("o-confirm").value;
-    if (!pass || pass.length < 8) { setErr("err-o-pass", "Password must be at least 8 characters."); ok = false; }
-    else setErr("err-o-pass", "");
-    if (pass && pass !== confirm) { setErr("err-o-confirm", "Passwords do not match."); ok = false; }
-    else if (pass) setErr("err-o-confirm", "");
-  }
+  const name    = document.getElementById("reg-name")?.value.trim();
+  const email   = document.getElementById("reg-email")?.value.trim();
+  const pass    = document.getElementById("reg-pass")?.value;
+  const confirm = document.getElementById("reg-confirm")?.value;
+
+  let ok = true;
+
+  if (!name)  { setErr("err-reg-name",  "Full name is required.");   ok = false; }
+  else          setErr("err-reg-name",  "");
+
+  if (!email) { setErr("err-reg-email", "Email is required.");        ok = false; }
+  else          setErr("err-reg-email", "");
+
+  if (!pass || pass.length < 8) {
+    setErr("err-reg-pass", "Password must be at least 8 characters."); ok = false;
+  } else setErr("err-reg-pass", "");
+
+  if (pass && pass !== confirm) {
+    setErr("err-reg-confirm", "Passwords do not match."); ok = false;
+  } else setErr("err-reg-confirm", "");
 
   if (!ok) return;
 
-  const appId = uuid();
-  const userId = uuid();
-  setBtnLoading("apply-btn", true, isOfficial ? "Request Official Account" : "Submit Application");
+  setBtnLoading("signup-btn", true, "Sign Up");
 
-  if (!isOfficial) {
-    // Citizen: insert user + application (existing flow)
-    const { error: userErr } = await supabase.from("users").insert({
-      id: userId,
-      full_name: document.getElementById("a-name").value.trim(),
-      email: document.getElementById("a-email").value.trim(),
-      TRN: document.getElementById("a-trn").value.trim(),
-      date_of_birth: document.getElementById("a-dob").value,
-      phone: document.getElementById("a-phone").value.trim(),
-      role: "citizen",
-      status: "active",
-    });
-    if (userErr) {
-      setBtnLoading("apply-btn", false, "Submit Application");
-      showToast("Failed to save user details. Please try again.", true);
-      console.error("users insert:", userErr.message);
-      return;
-    }
-    const { error: appErr } = await supabase.from("applications").insert({
-      id: appId, user_id: userId, type: "application", status: "pending",
-    });
-    setBtnLoading("apply-btn", false, "Submit Application");
-    if (appErr) { showToast("Failed to create application. Please try again.", true); console.error("applications insert:", appErr.message); return; }
-    showToast("Application submitted successfully!");
-    showSuccess("Application Submitted", appId, userId);
+  // Supabase Auth sign-up
+  const { data, error } = await supabase.auth.signUp({ email, password: pass });
 
-  } else {
-    // Official: insert user record with pending_approval
-    const { error: userErr } = await supabase.from("users").insert({
-      id: userId,
-      full_name: document.getElementById("o-name").value.trim(),
-      email: document.getElementById("o-email").value.trim(),
-      TRN: document.getElementById("o-trn").value.trim(),
-      organisation: document.getElementById("o-org").value,
-      rank: document.getElementById("o-rank").value.trim(),
-      badge_id: document.getElementById("o-badge").value.trim(),
-      department: document.getElementById("o-dept").value.trim(),
-      auth_code: document.getElementById("o-auth-code").value.trim(),
-      role: "official",
-      status: "pending_approval",
-    });
-    setBtnLoading("apply-btn", false, "Request Official Account");
-    if (userErr) { showToast("Failed to submit request. Please try again.", true); console.error("users insert:", userErr.message); return; }
-    showToast("Official account request submitted!");
-    showSuccess("Request Submitted", appId, userId);
-  }
-});
-
-// ── RENEW form submit ──────────────────────────────────────
-
-document.getElementById("form-renew").addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const ok = validate([
-    ["r-name", "err-r-name", "Full name is required."],
-    ["r-trn", "err-r-trn", "TRN is required."],
-    ["r-licence", "err-r-licence", "Licence number is required."],
-    ["r-issue", "err-r-issue", "Issue date is required."],
-    ["r-expiry", "err-r-expiry", "Expiry date is required."],
-    ["r-status", "err-r-status", "Status is required."],
-    ["r-payment", "err-r-payment", "Payment method is required."],
-    ["r-amount", "err-r-amount", "Payment amount is required."],
-  ]);
-  if (!ok) return;
-
-  const appId = uuid();
-  const userId = uuid();
-  const licNum = document.getElementById("r-licence").value.trim();
-
-  setBtnLoading("renew-btn", true, "Submit Renewal");
-
-  // Insert into applications table
-  const { error: appErr } = await supabase.from("applications").insert({
-    id: appId,
-    user_id: userId,
-    type: "renewal",
-    status: "pending",
-    licence_number: licNum,
-  });
-
-  if (appErr) {
-    setBtnLoading("renew-btn", false, "Submit Renewal");
-    showToast("Failed to create application. Please try again.", true);
-    console.error("applications insert:", appErr.message);
+  if (error) {
+    setBtnLoading("signup-btn", false, "Sign Up");
+    showToast(error.message, true);
     return;
   }
 
-  // Insert into licenses table
-  const { error: licErr } = await supabase.from("licenses").insert({
-    user_id: userId,
-    application_id: appId,
-    licence_number: licNum,
-    issue_date: document.getElementById("r-issue").value,
-    expiry_date: document.getElementById("r-expiry").value,
-    status: document.getElementById("r-status").value,
-  });
-
-  if (licErr) {
-    console.warn("licenses insert:", licErr.message); // non-fatal, app already created
+  // Insert profile row
+  if (data?.user) {
+    await supabase.from("users").insert({
+      id:        data.user.id,
+      full_name: name,
+      email,
+      role:      "citizen",
+      status:    "active",
+    });
   }
 
-  // Insert into payments table
-  const { error: payErr } = await supabase.from("payments").insert({
-    application_id: appId,
-    amount: parseFloat(document.getElementById("r-amount").value) || 0,
-    method: document.getElementById("r-payment").value,
-    status: "pending",
-  });
-
-  setBtnLoading("renew-btn", false, "Submit Renewal");
-
-  if (payErr) {
-    console.warn("payments insert:", payErr.message); // non-fatal
-  }
-
-  showToast("Renewal submitted successfully!");
-  showSuccess("Renewal Submitted", appId, userId);
+  setBtnLoading("signup-btn", false, "Sign Up");
+  showToast("Account created! Check your email to confirm.");
 });
 
-// ── File input label update ────────────────────────────────
+// ── Login submit ───────────────────────────────────────────
 
-document.getElementById("r-file")?.addEventListener("change", (e) => {
-  const file = e.target.files[0];
-  const label = document.getElementById("file-label");
-  const drop = document.getElementById("file-drop");
-  if (file) {
-    label.textContent = file.name;
-    drop.classList.add("file-drop--has-file");
-  } else {
-    label.textContent = "Click to upload or drag & drop — PDF, JPG, PNG";
-    drop.classList.remove("file-drop--has-file");
+document.getElementById("form-login")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const email = document.getElementById("login-email")?.value.trim();
+  const pass  = document.getElementById("login-pass")?.value;
+  let ok = true;
+
+  if (!email) { setErr("err-login-email", "Email is required.");    ok = false; }
+  else          setErr("err-login-email", "");
+
+  if (!pass)  { setErr("err-login-pass",  "Password is required."); ok = false; }
+  else          setErr("err-login-pass", "");
+
+  if (!ok) return;
+
+  setBtnLoading("signin-btn", true, "Sign In");
+
+  const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
+
+  setBtnLoading("signin-btn", false, "Sign In");
+
+  if (error) {
+    showToast(error.message, true);
+    return;
   }
+
+  // Redirect after login
+  window.location.href = "/pages/dashboard.html";
 });
