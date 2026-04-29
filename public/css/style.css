@@ -160,7 +160,7 @@ HERO
 
 .hero-eyebrow {
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: 0.9rem;
   font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -204,7 +204,7 @@ HERO
   border-radius: 2px;
   cursor: pointer;
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -231,7 +231,7 @@ SHARED SECTION HELPERS
 .section-eyebrow {
   display: block;
   font-family: var(--font-mono);
-  font-size: 0.6rem;
+  font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -249,7 +249,7 @@ SHARED SECTION HELPERS
 }
 
 .section-head p {
-  font-size: 0.88rem;
+  font-size: 1rem;
   color: var(--text-muted);
   max-width: 460px;
   margin: 0 auto;
@@ -290,7 +290,7 @@ SERVICES
 
 .service-card__num {
   font-family: var(--font-mono);
-  font-size: 0.6rem;
+  font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.12em;
   color: var(--accent);
@@ -298,14 +298,14 @@ SERVICES
 
 .service-card h3 {
   font-family: var(--font-mono);
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--text);
   letter-spacing: -0.01em;
 }
 
 .service-card p {
-  font-size: 0.82rem;
+  font-size: 0.9rem;
   color: var(--text-muted);
   line-height: 1.7;
   flex: 1;
@@ -313,7 +313,7 @@ SERVICES
 
 .service-card__link {
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   color: var(--green);
@@ -355,7 +355,7 @@ HOW IT WORKS
 
 .step-num {
   font-family: var(--font-mono);
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: 600;
   color: var(--accent);
   opacity: 0.35;
@@ -365,7 +365,7 @@ HOW IT WORKS
 
 .step h4 {
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: var(--text);
   margin-bottom: 8px;
@@ -428,7 +428,7 @@ ABOUT
 }
 
 .about__text-col p {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: var(--text-muted);
   line-height: 1.75;
   max-width: 440px;
@@ -438,7 +438,7 @@ ABOUT
   border-left: 2px solid var(--green);
   padding-left: 16px;
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: 0.9rem;
   color: var(--text-muted);
   font-style: italic;
   line-height: 1.6;
@@ -470,7 +470,7 @@ VISION / MISSION SPLIT
 
 .vm-card__label {
   font-family: var(--font-mono);
-  font-size: 0.6rem;
+  font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -481,7 +481,7 @@ VISION / MISSION SPLIT
 }
 
 .vm-card p {
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   line-height: 1.75;
   max-width: 400px;
 }
@@ -530,7 +530,7 @@ CONTACT
 
 .cf-label {
   font-family: var(--font-mono);
-  font-size: 0.6rem;
+  font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -545,7 +545,7 @@ CONTACT
   border-radius: 2px;
   color: var(--text);
   font-family: var(--font-ui);
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   outline: none;
   transition:
     border-color var(--tr),
@@ -574,7 +574,7 @@ CONTACT
   border: none;
   border-radius: 2px;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.9rem;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -617,7 +617,7 @@ CONTACT
 
 .ci-label {
   font-family: var(--font-mono);
-  font-size: 0.58rem;
+  font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -625,7 +625,7 @@ CONTACT
 }
 
 .ci-value {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   color: var(--text);
 }
 
@@ -648,7 +648,7 @@ FOOTER
 
 .footer__brand {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -660,7 +660,7 @@ FOOTER
 }
 
 .footer__brand p {
-  font-size: 0.58rem;
+  font-size: 0.8rem;
   color: var(--text-subtle);
   letter-spacing: 0.12em;
   margin-top: 4px;
@@ -675,7 +675,7 @@ FOOTER
 
 .footer__links a {
   font-family: var(--font-mono);
-  font-size: 0.62rem;
+  font-size: 0.7rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -688,7 +688,7 @@ FOOTER
 
 .footer__copy {
   font-family: var(--font-mono);
-  font-size: 0.58rem;
+  font-size: 0.7rem;
   color: var(--text-subtle);
   letter-spacing: 0.06em;
 }
