@@ -12,40 +12,26 @@ function uuid() {
       });
 }
 
-// ── Tab switcher ───────────────────────────────────────────
-// Fade out current panel, then fade in the next one.
-
-window.switchTab = function (type) {
-  const tabs = ["apply", "renew", "signup"];
-  tabs.forEach((t) => {
-    document.getElementById("tab-" + t)?.classList.toggle("active", t === type);
-    const panel = document.getElementById("form-" + t);
-    if (!panel) return;
-    if (t === type) {
-      panel.classList.remove("hidden");
-    } else {
-      if (!panel.classList.contains("hidden")) {
-        panel.classList.add("hiding");
-        panel.addEventListener(
-          "animationend",
-          () => {
-            panel.classList.add("hidden");
-            panel.classList.remove("hiding");
-          },
-          { once: true }
-        );
-      }
-    }
-  });
-
-  const titles = { apply: "New Application", renew: "Renew / Replace", signup: "Sign Up" };
-  document.getElementById("page-title").textContent = titles[type] || "New Application";
-  document.getElementById("success-panel").classList.add("hidden");
-};
-
-// Open on correct tab from URL: /apply?type=renew or ?type=signup
-const urlType = new URLSearchParams(window.location.search).get("type");
-if (urlType === "renew" || urlType === "signup") switchTab(urlType);
+// Tab switcher and role toggle are handled by inline script in application.html
+// (kept here as fallback for other pages that may load this module)
+if (!window.switchTab) {
+  window.switchTab = function (type) {
+    const isRenew = type === "renew";
+    const outPanel = document.getElementById(isRenew ? "form-apply" : "form-renew");
+    const inPanel = document.getElementById(isRenew ? "form-renew" : "form-apply");
+    document.getElementById("tab-apply").classList.toggle("active", !isRenew);
+    document.getElementById("tab-renew").classList.toggle("active", isRenew);
+    document.getElementById("page-title").textContent = isRenew ? "Renew / Replace" : "New Application";
+    document.getElementById("success-panel").classList.add("hidden");
+    if (outPanel.classList.contains("hidden")) { inPanel.classList.remove("hidden"); return; }
+    outPanel.classList.add("hiding");
+    outPanel.addEventListener("animationend", () => {
+      outPanel.classList.add("hidden");
+      outPanel.classList.remove("hiding");
+      inPanel.classList.remove("hidden");
+    }, { once: true });
+  };
+}
 
 // ── Field error helpers ────────────────────────────────────
 
@@ -108,60 +94,156 @@ function showSuccess(title, appId, userId) {
   document.getElementById("out-user-id").textContent = userId;
 }
 
+// Role toggle is initialized by inline script in application.html
+// These listeners are added only if not already initialized
+if (!window._roleToggleInit) {
+  window._roleToggleInit = true;
+  const cardCitizen = document.getElementById("card-citizen");
+  const cardOfficial = document.getElementById("card-official");
+
+  function getApplyRole() {
+    return document.querySelector('input[name="apply-role"]:checked')?.value || "citizen";
+  }
+
+  function updateApplyRole() {
+    const isOfficial = getApplyRole() === "official";
+    cardCitizen?.classList.toggle("selected", !isOfficial);
+    cardOfficial?.classList.toggle("selected", isOfficial);
+    document.getElementById("citizen-fields").classList.toggle("hidden", isOfficial);
+    document.getElementById("official-fields").classList.toggle("hidden", !isOfficial);
+    document.getElementById("apply-btn").textContent = isOfficial
+      ? "Request Official Account"
+      : "Submit Application";
+  }
+
+  document.querySelectorAll('input[name="apply-role"]').forEach((r) =>
+    r.addEventListener("change", updateApplyRole)
+  );
+  [cardCitizen, cardOfficial].forEach((card) => {
+    card?.addEventListener("click", () => {
+      const radio = card.querySelector('input[type="radio"]');
+      if (radio) { radio.checked = true; updateApplyRole(); }
+    });
+  });
+}
+
+// ── Password strength helper ───────────────────────────────
+
+function attachStrength(inputId, segPrefix, labelId) {
+  document.getElementById(inputId)?.addEventListener("input", function () {
+    const p = this.value;
+    let score = 0;
+    if (p.length >= 8) score++;
+    if (p.length >= 12) score++;
+    if (/[A-Z]/.test(p) && /[a-z]/.test(p)) score++;
+    if (/\d/.test(p)) score++;
+    if (/[^A-Za-z0-9]/.test(p)) score++;
+    score = Math.min(4, score);
+    const fillClass = ["", "fill-weak", "fill-fair", "fill-good", "fill-strong"][score];
+    const labels = ["", "Weak", "Fair", "Good", "Strong"];
+    [1, 2, 3, 4].forEach((i) => {
+      const seg = document.getElementById(segPrefix + i);
+      if (seg) seg.className = "strength-seg" + (i <= score ? " " + fillClass : "");
+    });
+    const lbl = document.getElementById(labelId);
+    if (lbl) lbl.textContent = p ? labels[score] : "";
+  });
+}
+
+attachStrength("a-pass", "a-seg-", "a-strength-label");
+attachStrength("o-pass", "o-seg-", "o-strength-label");
+
 // ── APPLY form submit ──────────────────────────────────────
 
 document.getElementById("form-apply").addEventListener("submit", async (e) => {
   e.preventDefault();
+  const isOfficial = getApplyRole() === "official";
 
-  const ok = validate([
-    ["a-name", "err-a-name", "Full name is required."],
-    ["a-email", "err-a-email", "Email is required."],
-    ["a-trn", "err-a-trn", "TRN is required."],
-    ["a-dob", "err-a-dob", "Date of birth is required."],
-    ["a-phone", "err-a-phone", "Phone number is required."],
-  ]);
+  let ok;
+  if (!isOfficial) {
+    ok = validate([
+      ["a-name",    "err-a-name",    "Full name is required."],
+      ["a-email",   "err-a-email",   "Email is required."],
+      ["a-trn",     "err-a-trn",     "TRN is required."],
+      ["a-dob",     "err-a-dob",     "Date of birth is required."],
+      ["a-phone",   "err-a-phone",   "Phone number is required."],
+    ]);
+    const pass = document.getElementById("a-pass").value;
+    const confirm = document.getElementById("a-confirm").value;
+    if (!pass || pass.length < 8) { setErr("err-a-pass", "Password must be at least 8 characters."); ok = false; }
+    else setErr("err-a-pass", "");
+    if (pass && pass !== confirm) { setErr("err-a-confirm", "Passwords do not match."); ok = false; }
+    else if (pass) setErr("err-a-confirm", "");
+  } else {
+    ok = validate([
+      ["o-name",      "err-o-name",      "Full name is required."],
+      ["o-email",     "err-o-email",     "Email is required."],
+      ["o-trn",       "err-o-trn",       "TRN is required."],
+      ["o-org",       "err-o-org",       "Organisation is required."],
+      ["o-rank",      "err-o-rank",      "Rank / Title is required."],
+      ["o-badge",     "err-o-badge",     "Badge / Staff ID is required."],
+      ["o-auth-code", "err-o-auth-code", "Authorization code is required."],
+    ]);
+    const pass = document.getElementById("o-pass").value;
+    const confirm = document.getElementById("o-confirm").value;
+    if (!pass || pass.length < 8) { setErr("err-o-pass", "Password must be at least 8 characters."); ok = false; }
+    else setErr("err-o-pass", "");
+    if (pass && pass !== confirm) { setErr("err-o-confirm", "Passwords do not match."); ok = false; }
+    else if (pass) setErr("err-o-confirm", "");
+  }
+
   if (!ok) return;
 
   const appId = uuid();
   const userId = uuid();
+  setBtnLoading("apply-btn", true, isOfficial ? "Request Official Account" : "Submit Application");
 
-  setBtnLoading("apply-btn", true, "Submit Application");
-
-  // Insert into users table
-  const { error: userErr } = await supabase.from("users").insert({
-    id: userId,
-    full_name: document.getElementById("a-name").value.trim(),
-    email: document.getElementById("a-email").value.trim(),
-    TRN: document.getElementById("a-trn").value.trim(),
-    date_of_birth: document.getElementById("a-dob").value,
-    phone: document.getElementById("a-phone").value.trim(),
-  });
-
-  if (userErr) {
+  if (!isOfficial) {
+    // Citizen: insert user + application (existing flow)
+    const { error: userErr } = await supabase.from("users").insert({
+      id: userId,
+      full_name: document.getElementById("a-name").value.trim(),
+      email: document.getElementById("a-email").value.trim(),
+      TRN: document.getElementById("a-trn").value.trim(),
+      date_of_birth: document.getElementById("a-dob").value,
+      phone: document.getElementById("a-phone").value.trim(),
+      role: "citizen",
+      status: "active",
+    });
+    if (userErr) {
+      setBtnLoading("apply-btn", false, "Submit Application");
+      showToast("Failed to save user details. Please try again.", true);
+      console.error("users insert:", userErr.message);
+      return;
+    }
+    const { error: appErr } = await supabase.from("applications").insert({
+      id: appId, user_id: userId, type: "application", status: "pending",
+    });
     setBtnLoading("apply-btn", false, "Submit Application");
-    showToast("Failed to save user details. Please try again.", true);
-    console.error("users insert:", userErr.message);
-    return;
+    if (appErr) { showToast("Failed to create application. Please try again.", true); console.error("applications insert:", appErr.message); return; }
+    showToast("Application submitted successfully!");
+    showSuccess("Application Submitted", appId, userId);
+
+  } else {
+    // Official: insert user record with pending_approval
+    const { error: userErr } = await supabase.from("users").insert({
+      id: userId,
+      full_name: document.getElementById("o-name").value.trim(),
+      email: document.getElementById("o-email").value.trim(),
+      TRN: document.getElementById("o-trn").value.trim(),
+      organisation: document.getElementById("o-org").value,
+      rank: document.getElementById("o-rank").value.trim(),
+      badge_id: document.getElementById("o-badge").value.trim(),
+      department: document.getElementById("o-dept").value.trim(),
+      auth_code: document.getElementById("o-auth-code").value.trim(),
+      role: "official",
+      status: "pending_approval",
+    });
+    setBtnLoading("apply-btn", false, "Request Official Account");
+    if (userErr) { showToast("Failed to submit request. Please try again.", true); console.error("users insert:", userErr.message); return; }
+    showToast("Official account request submitted!");
+    showSuccess("Request Submitted", appId, userId);
   }
-
-  // Insert into applications table
-  const { error: appErr } = await supabase.from("applications").insert({
-    id: appId,
-    user_id: userId,
-    type: "application",
-    status: "pending",
-  });
-
-  setBtnLoading("apply-btn", false, "Submit Application");
-
-  if (appErr) {
-    showToast("Failed to create application. Please try again.", true);
-    console.error("applications insert:", appErr.message);
-    return;
-  }
-
-  showToast("Application submitted successfully!");
-  showSuccess("Application Submitted", appId, userId);
 });
 
 // ── RENEW form submit ──────────────────────────────────────
@@ -248,157 +330,4 @@ document.getElementById("r-file")?.addEventListener("change", (e) => {
     label.textContent = "Click to upload or drag & drop — PDF, JPG, PNG";
     drop.classList.remove("file-drop--has-file");
   }
-});
-
-// ── SIGNUP role toggle ─────────────────────────────────────
-
-const cardCitizen = document.getElementById("card-citizen");
-const cardOfficial = document.getElementById("card-official");
-const officialFields = document.getElementById("official-fields");
-const signupBtn = document.getElementById("signup-btn");
-
-function getSignupRole() {
-  return document.querySelector('input[name="su-role"]:checked')?.value || "citizen";
-}
-
-function updateSignupRole() {
-  const isOfficial = getSignupRole() === "official";
-  cardCitizen?.classList.toggle("selected", !isOfficial);
-  cardOfficial?.classList.toggle("selected", isOfficial);
-  if (officialFields) {
-    officialFields.classList.toggle("hidden", !isOfficial);
-  }
-  if (signupBtn) {
-    signupBtn.textContent = isOfficial ? "Request Official Account" : "Create Account";
-  }
-}
-
-document.querySelectorAll('input[name="su-role"]').forEach((r) =>
-  r.addEventListener("change", updateSignupRole)
-);
-[cardCitizen, cardOfficial].forEach((card) => {
-  card?.addEventListener("click", () => {
-    const radio = card.querySelector('input[type="radio"]');
-    if (radio) { radio.checked = true; updateSignupRole(); }
-  });
-});
-
-// ── Password strength ──────────────────────────────────────
-
-document.getElementById("su-pass")?.addEventListener("input", function () {
-  const p = this.value;
-  let score = 0;
-  if (p.length >= 8) score++;
-  if (p.length >= 12) score++;
-  if (/[A-Z]/.test(p) && /[a-z]/.test(p)) score++;
-  if (/\d/.test(p)) score++;
-  if (/[^A-Za-z0-9]/.test(p)) score++;
-  score = Math.min(4, score);
-
-  const fillClass = ["", "fill-weak", "fill-fair", "fill-good", "fill-strong"][score];
-  const labels = ["", "Weak", "Fair", "Good", "Strong"];
-  [1, 2, 3, 4].forEach((i) => {
-    const seg = document.getElementById("seg-" + i);
-    if (seg) { seg.className = "strength-seg" + (i <= score ? " " + fillClass : ""); }
-  });
-  const lbl = document.getElementById("strength-label");
-  if (lbl) lbl.textContent = p ? labels[score] : "";
-});
-
-// ── SIGNUP form submit ─────────────────────────────────────
-
-document.getElementById("form-signup")?.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const role = getSignupRole();
-  const isOfficial = role === "official";
-
-  // Clear all errors
-  ["su-name","su-email","su-phone","su-trn","su-dob","su-pass","su-confirm",
-   "su-org","su-rank","su-badge","su-auth-code"].forEach((id) => setErr("err-" + id, ""));
-
-  let ok = validate([
-    ["su-name",  "err-su-name",  "Full name is required."],
-    ["su-email", "err-su-email", "Email is required."],
-    ["su-phone", "err-su-phone", "Phone is required."],
-    ["su-trn",   "err-su-trn",   "TRN is required."],
-    ["su-dob",   "err-su-dob",   "Date of birth is required."],
-  ]);
-
-  const pass = document.getElementById("su-pass")?.value || "";
-  const confirm = document.getElementById("su-confirm")?.value || "";
-
-  if (!pass || pass.length < 8) {
-    setErr("err-su-pass", "Password must be at least 8 characters.");
-    ok = false;
-  }
-  if (pass && pass !== confirm) {
-    setErr("err-su-confirm", "Passwords do not match.");
-    ok = false;
-  }
-
-  if (isOfficial) {
-    ok = validate([
-      ["su-org",       "err-su-org",       "Organisation is required."],
-      ["su-rank",      "err-su-rank",       "Rank / Title is required."],
-      ["su-badge",     "err-su-badge",      "Badge / Staff ID is required."],
-      ["su-auth-code", "err-su-auth-code",  "Authorization code is required."],
-    ]) && ok;
-  }
-
-  if (!ok) return;
-
-  setBtnLoading("signup-btn", true, isOfficial ? "Request Official Account" : "Create Account");
-
-  // Supabase auth signup
-  const { data: authData, error: authErr } = await supabase.auth.signUp({
-    email: document.getElementById("su-email").value.trim(),
-    password: pass,
-    options: { data: { full_name: document.getElementById("su-name").value.trim(), role } },
-  });
-
-  if (authErr) {
-    setBtnLoading("signup-btn", false, isOfficial ? "Request Official Account" : "Create Account");
-    showToast(authErr.message, true);
-    return;
-  }
-
-  const userId = authData?.user?.id || uuid();
-
-  const profilePayload = {
-    id: userId,
-    full_name: document.getElementById("su-name").value.trim(),
-    email: document.getElementById("su-email").value.trim(),
-    TRN: document.getElementById("su-trn").value.trim(),
-    date_of_birth: document.getElementById("su-dob").value,
-    phone: document.getElementById("su-phone").value.trim(),
-    role,
-    status: isOfficial ? "pending_approval" : "active",
-  };
-
-  if (isOfficial) {
-    profilePayload.organisation = document.getElementById("su-org").value;
-    profilePayload.rank         = document.getElementById("su-rank").value.trim();
-    profilePayload.badge_id     = document.getElementById("su-badge").value.trim();
-    profilePayload.department   = document.getElementById("su-dept")?.value.trim() || "";
-    profilePayload.auth_code    = document.getElementById("su-auth-code").value.trim();
-  }
-
-  const { error: profileErr } = await supabase.from("users").insert(profilePayload);
-  if (profileErr) console.warn("profile insert:", profileErr.message);
-
-  setBtnLoading("signup-btn", false, isOfficial ? "Request Official Account" : "Create Account");
-
-  showToast(isOfficial ? "Official account request submitted!" : "Account created successfully!");
-  showSuccess(
-    isOfficial ? "Request Submitted" : "Account Created",
-    "—",
-    userId
-  );
-
-  // Update success panel text for signup context
-  const sub = document.getElementById("success-panel")?.querySelector(".success__sub");
-  if (sub) sub.textContent = isOfficial
-    ? "Your official account is pending supervisor approval. Check your email for updates."
-    : "Your account is active. You can now sign in.";
 });

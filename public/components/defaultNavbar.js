@@ -23,4 +23,4 @@ class DefaultNavbar extends HTMLElement {
   }
 }
 
-customElements.define('defualt-navbar', DefaultNavbar);
+customElements.define('default-navbar', DefaultNavbar);
