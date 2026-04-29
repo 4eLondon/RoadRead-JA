@@ -30,7 +30,9 @@ body {
   border: 1px solid var(--border);
   background: var(--bg);
   position: relative;
-  overflow: visible; 
+  overflow: hidden;
+  /* Firefox-compatible clipping: hidden clips the sliding panel correctly */
+  /* The ::after spacer below ensures height is not collapsed */
 }
 
 /* Spacer so the relatively-positioned card has height */
@@ -598,9 +600,8 @@ RESPONSIVE
     margin-bottom 0.3s ease;
   margin-bottom: 0;
   /* Ensure it behaves as a block element during transition */
-  display: block; 
-}:where
-
+  display: block;
+}
 
 .admin-section--expanded {
   max-height: 520px;
