@@ -470,7 +470,7 @@ RESPONSIVE — Tablet (≤ 780px) & Mobile (≤ 480px)
   }
 }
 
-/* ── Role selector (signup tab) ──────────────────────────── */
+/* ── Role selector (apply form) ──────────────────────────── */
 .role-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -525,6 +525,11 @@ RESPONSIVE — Tablet (≤ 780px) & Mobile (≤ 480px)
   line-height: 1.4;
 }
 
+/* ── Official fields slide-in ────────────────────────────── */
+#official-fields:not(.hidden) {
+  animation: formFadeIn 0.22s ease both;
+}
+
 /* ── Official note ───────────────────────────────────────── */
 .official-note {
   background: var(--surface-2);
@@ -563,11 +568,6 @@ RESPONSIVE — Tablet (≤ 780px) & Mobile (≤ 480px)
   color: var(--text-subtle);
   margin-top: 3px;
   display: block;
-}
-
-/* ── Official fields fade-in ─────────────────────────────── */
-#official-fields:not(.hidden) {
-  animation: formFadeIn 0.22s ease both;
 }
 
 @media (max-width: 520px) {
