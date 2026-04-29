@@ -472,3 +472,203 @@ RESPONSIVE
     margin-top: 4px;
   }
 }
+
+/* ── Role Selector ───────────────────────────────────────────
+   Add these rules to the bottom of auth.css
+────────────────────────────────────────────────────────────── */
+
+.role-selector {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 1.2rem;
+}
+
+.role-option {
+  flex: 1;
+  cursor: pointer;
+}
+
+/* Hide the native radio input but keep it accessible */
+.role-option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.role-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: var(--surface);
+  transition: border-color var(--tr), background var(--tr);
+  cursor: pointer;
+  user-select: none;
+}
+
+.role-option input:checked + .role-card {
+  border-color: var(--accent);
+  background: rgba(245, 197, 24, 0.06);
+}
+
+.role-option input:focus-visible + .role-card {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Custom radio dot */
+.role-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid var(--text-muted);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color var(--tr);
+}
+
+.role-option input:checked + .role-card .role-dot {
+  border-color: var(--accent);
+}
+
+.role-dot::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0;
+  transform: scale(0);
+  transition: opacity var(--tr), transform var(--tr);
+}
+
+.role-option input:checked + .role-card .role-dot::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Role text */
+.role-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.role-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.role-sublabel {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+/* ── Admin section (collapsible) ─────────────────────────── */
+
+.admin-section {
+  width: 100%;
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition:
+    max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.3s ease,
+    margin-bottom 0.3s ease;
+  margin-bottom: 0;
+}
+
+.admin-section--expanded {
+  max-height: 520px;
+  opacity: 1;
+  margin-bottom: 0.4rem;
+}
+
+/* Divider with centred label */
+.admin-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.admin-divider-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.admin-divider-label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* Side-by-side field pair */
+.field-row {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.field-row .field {
+  flex: 1;
+}
+
+/* Style the department <select> to match existing inputs */
+.field select {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 0.88rem;
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+  transition:
+    border-color var(--transition),
+    background var(--transition);
+  /* Subtle chevron */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+.field select:focus {
+  border-color: var(--accent);
+  background-color: var(--surface-2);
+}
+
+.field select option {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+/* Placeholder option (disabled) */
+.field select option[disabled] {
+  color: var(--text-subtle);
+}
+
+/* ── Responsive tweaks for role selector ─────────────────── */
+@media (max-width: 480px) {
+  .role-selector {
+    flex-direction: column;
+  }
+}
