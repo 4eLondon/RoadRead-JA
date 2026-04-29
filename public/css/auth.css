@@ -25,20 +25,22 @@ body {
 /* ── Card ────────────────────────────────────────────────── */
 .card {
   width: 780px;
-  min-height: 480px;
+  min-height: 650px; 
   border-radius: 2px;
   border: 1px solid var(--border);
   background: var(--bg);
   position: relative;
-  overflow: hidden;
+  overflow: visible; 
 }
 
 /* Spacer so the relatively-positioned card has height */
 .card::after {
   content: "";
   display: block;
-  min-height: 480px;
+  /* Match the new min-height */
+  min-height: 650px;
 }
+
 
 /* ── Theme toggle ────────────────────────────────────────── */
 .theme-toggle {
@@ -493,8 +495,18 @@ RESPONSIVE
 .role-option input[type="radio"] {
   position: absolute;
   opacity: 0;
-  width: 0;
-  height: 0;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0; 
+  width: 1px;
+  height: 1px;
+  border: 0;
+  padding: 0;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .role-card {
@@ -575,7 +587,6 @@ RESPONSIVE
 }
 
 /* ── Admin section (collapsible) ─────────────────────────── */
-
 .admin-section {
   width: 100%;
   overflow: hidden;
@@ -586,7 +597,10 @@ RESPONSIVE
     opacity 0.3s ease,
     margin-bottom 0.3s ease;
   margin-bottom: 0;
-}
+  /* Ensure it behaves as a block element during transition */
+  display: block; 
+}:where
+
 
 .admin-section--expanded {
   max-height: 520px;
@@ -671,4 +685,17 @@ RESPONSIVE
   .role-selector {
     flex-direction: column;
   }
+}
+
+ /* Add to bottom of auth.css */
+
+/* Login Role Selector specific tweaks if needed */
+#form-login .role-selector {
+  margin-bottom: 1.5rem;
+}
+
+/* Admin ID Display Box */
+#admin-id-display input {
+  cursor: not-allowed;
+  border-color: var(--accent);
 }

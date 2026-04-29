@@ -11,185 +11,188 @@
   <link rel="stylesheet" href="/public/css/dotnav.css" />
 </head>
 
+
 <body>
-  <!-- ── Top dot navigation ── -->
-  <nav class="dot-nav">
-    <div class="dot-nav__item">
-      <a class="dot-nav__dot" href="/"></a>
-      <span class="dot-nav__label">Home</span>
-    </div>
-    <div class="dot-nav__item">
-      <a class="dot-nav__dot" href="/#about"></a>
-      <span class="dot-nav__label">About Us</span>
-    </div>
-    <div class="dot-nav__item">
-      <a class="dot-nav__dot" href="/#contact"></a>
-      <span class="dot-nav__label">Contact</span>
-    </div>
-    <button id="theme-toggle" class="theme-toggle" aria-label="Switch to light mode">☀</button>
-  </nav>
 
-  <!-- Top bar -->
-  <nav class="topbar">
-    <img src="/public/images/logo.png" style="width: 160px; height: auto" alt="Road Ready JA logo" />
-  </nav>
-
-  <!-- Toast notification -->
-  <div id="toast" class="toast" role="alert" aria-live="polite"></div>
-
+  <!-- Main Card Container -->
   <div class="card" id="card">
-    <!-- LEFT PANEL -->
-    <div class="panel panel-left">
-      <div class="brand">
-        <span>Road Ready JA</span>
-      </div>
-
+    
+    <!-- LEFT PANEL (Green Slider) -->
+    <div class="panel-left">
+      <div class="brand">Road Ready JA</div>
       <div class="panel-content">
-        <!-- Register state -->
+        <!-- Message shown when on Register Form -->
         <div class="panel-msg" id="msg-register">
           <h2>Get Registered</h2>
-          <p>
-            To use our services<br />please sign up with your personal info
-          </p>
-          <button class="btn btn--outline" id="go-login">to Log In</button>
+          <p>To use our services<br/>please sign up with your personal info</p>
+          <button class="btn btn--outline" id="go-login">TO LOG IN</button>
         </div>
-
-        <!-- Login state -->
+        <!-- Message shown when on Login Form -->
         <div class="panel-msg panel-msg--hidden" id="msg-login">
           <h2>Welcome Back</h2>
-          <p>
-            Enter your details to log in.<br />
-            We are ready for you
-          </p>
-          <button class="btn btn--outline" id="go-register">
-            to Register
-          </button>
+          <p>Enter your details to log in.<br/>We are ready for you</p>
+          <button class="btn btn--outline" id="go-register">TO REGISTER</button>
         </div>
       </div>
     </div>
 
-    <!-- RIGHT PANEL -->
-    <div class="panel panel-right">
-
-
-<form id="form-register" class="form-wrap">
-  <h1>Create Account</h1>
-
-  <!-- ── Role selector ── -->
-  <div class="role-selector">
-    <label class="role-option">
-      <input type="radio" name="role" value="citizen" checked />
-      <div class="role-card">
-        <div class="role-dot"></div>
-        <div class="role-info">
-          <span class="role-label">Citizen</span>
-          <span class="role-sublabel">Personal account</span>
+    <!-- RIGHT PANEL (Forms) -->
+    <div class="panel-right">
+      
+      <!-- ================= REGISTER FORM ================= -->
+      <form class="form-wrap" id="form-register">
+        <h1>Create Account</h1>
+        
+        <!-- Role Selector -->
+        <div class="role-selector">
+          <label class="role-option">
+            <input type="radio" name="role" value="citizen" checked />
+            <div class="role-card">
+              <div class="role-dot"></div>
+              <div class="role-info">
+                <span class="role-label">Citizen</span>
+                <span class="role-sublabel">Personal account</span>
+              </div>
+            </div>
+          </label>
+          <label class="role-option">
+            <input type="radio" name="role" value="admin" />
+            <div class="role-card">
+              <div class="role-dot"></div>
+              <div class="role-info">
+                <span class="role-label">Admin</span>
+                <span class="role-sublabel">Government worker</span>
+              </div>
+            </div>
+          </label>
         </div>
-      </div>
-    </label>
 
-    <label class="role-option">
-      <input type="radio" name="role" value="admin" />
-      <div class="role-card">
-        <div class="role-dot"></div>
-        <div class="role-info">
-          <span class="role-label">Admin</span>
-          <span class="role-sublabel">Government worker</span>
+        <!-- Common Fields -->
+        <div class="field">
+          <input type="text" id="reg-name" placeholder="Full Name" />
+          <span id="err-reg-name" class="field-error"></span>
         </div>
-      </div>
-    </label>
-  </div>
+        <div class="field">
+          <input type="email" id="reg-email" placeholder="Email" />
+          <span id="err-reg-email" class="field-error"></span>
+        </div>
+        <div class="field">
+          <input type="password" id="reg-pass" placeholder="Password" />
+          <span id="err-reg-pass" class="field-error"></span>
+        </div>
+        <div class="field">
+          <input type="password" id="reg-confirm" placeholder="Confirm Password" />
+          <span id="err-reg-confirm" class="field-error"></span>
+        </div>
 
-  <!-- ── Common fields ── -->
-  <div class="field">
-    <input id="reg-name" type="text" placeholder="Full Name" autocomplete="name" />
-    <span id="err-reg-name" class="field-error"></span>
-  </div>
+        <!-- Admin Specific Fields (Hidden by default) -->
+        <div class="admin-section" id="admin-section">
+          <div class="admin-divider">
+            <div class="admin-divider-line"></div>
+            <span class="admin-divider-label">Government Details</span>
+            <div class="admin-divider-line"></div>
+          </div>
+          
+          <div class="field-row">
+             <div class="field">
+               <input type="text" id="reg-trn" placeholder="TRN" />
+               <span id="err-reg-trn" class="field-error"></span>
+             </div>
+             <div class="field">
+               <select id="reg-department">
+                 <option value="" disabled selected>Ministry / Department</option>
+                 <option value="MTM">Ministry of Transport & Mining</option>
+                 <option value="TAJ">Tax Administration Jamaica</option>
+                 <option value="ITA">Island Traffic Authority</option>
+                 <option value="JCF">Jamaica Constabulary Force</option>
+                 <option value="MOF">Ministry of Finance</option>
+                 <option value="OTHER">Other Government Agency</option>
+               </select>
+               <span id="err-reg-department" class="field-error"></span>
+             </div>
+          </div>
 
-  <div class="field">
-    <input id="reg-email" type="email" placeholder="Email" autocomplete="email" />
-    <span id="err-reg-email" class="field-error"></span>
-  </div>
+          <div class="field">
+            <input type="text" id="reg-job-title" placeholder="Job Title / Designation" />
+            <span id="err-reg-job-title" class="field-error"></span>
+          </div>
+          <div class="field">
+            <input type="tel" id="reg-work-phone" placeholder="Work Phone Number" />
+            <span id="err-reg-work-phone" class="field-error"></span>
+          </div>
+        </div>
 
-  <div class="field">
-    <input id="reg-pass" type="password" placeholder="Password" autocomplete="new-password" />
-    <span id="err-reg-pass" class="field-error"></span>
-  </div>
+        <!-- Display Generated Admin ID (Hidden by default) -->
+        <div class="field" id="admin-id-display" style="display: none;">
+           <label style="color: var(--accent); font-size: 0.8rem; margin-bottom: 5px; display:block;">Your Unique Admin ID:</label>
+           <input type="text" id="generated-admin-id" readonly style="background: var(--surface-2); color: var(--accent); font-weight: bold; text-align: center;" />
+           <p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 5px;">Save this ID! You will need it to log in.</p>
+        </div>
 
-  <div class="field">
-    <input id="reg-confirm" type="password" placeholder="Confirm Password" autocomplete="new-password" />
-    <span id="err-reg-confirm" class="field-error"></span>
-  </div>
+        <button type="submit" class="btn btn-main" id="signup-btn">SIGN UP</button>
+      </form>
 
-  <div id="admin-section" class="admin-section">
-    <div class="admin-divider">
-      <div class="admin-divider-line"></div>
-      <span class="admin-divider-label">Government Details</span>
-      <div class="admin-divider-line"></div>
-    </div>
-
-    <div class="field-row">
-      <div class="field">
-        <input id="reg-employee-id" type="text" placeholder="Employee ID / Badge No." />
-        <span id="err-reg-employee-id" class="field-error"></span>
-      </div>
-      <div class="field">
-        <input id="reg-trn" type="text" placeholder="TRN" maxlength="9" />
-        <span id="err-reg-trn" class="field-error"></span>
-      </div>
-    </div>
-
-    <div class="field">
-      <select id="reg-department">
-        <option value="" disabled selected>Ministry / Department</option>
-        <option value="Ministry of Transport & Mining">Ministry of Transport &amp; Mining</option>
-        <option value="Tax Administration Jamaica">Tax Administration Jamaica</option>
-        <option value="Island Traffic Authority">Island Traffic Authority</option>
-        <option value="Jamaica Constabulary Force">Jamaica Constabulary Force</option>
-        <option value="Ministry of Finance">Ministry of Finance</option>
-        <option value="Other Government Agency">Other Government Agency</option>
-      </select>
-      <span id="err-reg-department" class="field-error"></span>
-    </div>
-
-    <div class="field">
-      <input id="reg-job-title" type="text" placeholder="Job Title / Designation" />
-      <span id="err-reg-job-title" class="field-error"></span>
-    </div>
-
-    <div class="field">
-      <input id="reg-work-phone" type="tel" placeholder="Work Phone Number" autocomplete="tel" />
-      <span id="err-reg-work-phone" class="field-error"></span>
-    </div>
-  </div>
-
-  <button id="signup-btn" type="submit" class="btn btn-main">Sign Up</button>
-</form>
-
-
-
-      <!-- Login Form -->
-      <form class="form-wrap form-wrap--hidden" id="form-login" novalidate>
+      <!-- ================= LOGIN FORM ================= -->
+      <form class="form-wrap form-wrap--hidden" id="form-login">
         <h1>Sign In</h1>
 
-        <div class="field">
-          <input id="login-email" type="email" name="email" placeholder="Email" autocomplete="email" />
-          <span class="field-error" id="err-login-email"></span>
-        </div>
-        <div class="field">
-          <input id="login-pass" type="password" name="password" placeholder="Password" autocomplete="current-password" />
-          <span class="field-error" id="err-login-pass"></span>
+        <!-- Login Role Selector -->
+        <div class="role-selector">
+          <label class="role-option">
+            <input type="radio" name="login-role" value="citizen" checked />
+            <div class="role-card">
+              <div class="role-dot"></div>
+              <div class="role-info">
+                <span class="role-label">Citizen</span>
+                <span class="role-sublabel">Email & Password</span>
+              </div>
+            </div>
+          </label>
+          <label class="role-option">
+            <input type="radio" name="login-role" value="admin" />
+            <div class="role-card">
+              <div class="role-dot"></div>
+              <div class="role-info">
+                <span class="role-label">Admin</span>
+                <span class="role-sublabel">Admin ID & Password</span>
+              </div>
+            </div>
+          </label>
         </div>
 
-        <a class="forgot-link" href="/pages/forgot.html">Forgot your password?</a>
-        <button class="btn btn-main" id="signin-btn" type="submit">Sign In</button>
+        <!-- Citizen Login Inputs -->
+        <div id="citizen-login-fields">
+          <div class="field">
+            <input type="email" id="login-email" placeholder="Email" />
+            <span id="err-login-email" class="field-error"></span>
+          </div>
+        </div>
+
+        <!-- Admin Login Inputs -->
+        <div id="admin-login-fields" style="display: none;">
+          <div class="field">
+            <input type="text" id="login-admin-id" placeholder="Admin ID" />
+            <span id="err-login-admin-id" class="field-error"></span>
+          </div>
+        </div>
+
+        <!-- Common Password Field -->
+        <div class="field">
+          <input type="password" id="login-pass" placeholder="Password" />
+          <span id="err-login-pass" class="field-error"></span>
+        </div>
+
+        <a href="/pages/forgot.html" class="forgot-link">Forgot your password?</a>
+        <button type="submit" class="btn btn-main" id="signin-btn">SIGN IN</button>
       </form>
 
     </div>
   </div>
 
-  <script src="/public/js/theme.js"></script>
-  <script type="module" src="/public/js/auth.js"></script>
+  <div class="toast" id="toast"></div>
+  
+  <!-- Correct path to JS -->
+  <script type="module" src="../public/js/auth.js"></script>
 </body>
 
 </html>
