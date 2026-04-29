@@ -11,6 +11,9 @@ class DefaultNavbar extends HTMLElement {
           <li><a href="#about">About Us</a></li>
           <li><a href="#contact">Contact</a></li>
           <li><a href="/pages/dashboard.html">Dashboard</a></li>
+
+          <li><a href="/pages/admin.html">Admin</a></li>
+
         </ul>
         <div class="nav-right">
           <button class="login" onclick="window.location.href='/pages/auth.html'">
