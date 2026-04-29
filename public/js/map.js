@@ -1,233 +1,219 @@
-// map js file
+// map.js — Lazy-loaded Leaflet map with IntersectionObserver
+// Leaflet JS is injected dynamically only when the map section
+// scrolls into view, so it never blocks the initial page render.
 
-// Map initialization and location handling
-document.addEventListener('DOMContentLoaded', function() {
-    // ── Map init ───────────────────────────────────────────
-    const map = L.map('map', {
-        center: [18.1096, -77.2975], // Jamaica default
-        zoom: 9,
-        zoomControl: false,
+(function () {
+  const LEAFLET_JS = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+
+  // Jamaica bounding box — limits tile requests dramatically
+  const JA_BOUNDS = L_bounds => L_bounds([
+    [17.70, -78.40],
+    [18.55, -76.18],
+  ]);
+
+  let leafletLoaded = false;
+  let mapInstance   = null;
+
+  // ── Dynamically inject Leaflet JS ─────────────────────────
+  function loadLeaflet(callback) {
+    if (leafletLoaded) { callback(); return; }
+    const script = document.createElement('script');
+    script.src = LEAFLET_JS;
+    script.onload = () => { leafletLoaded = true; callback(); };
+    script.onerror = () => console.error('Failed to load Leaflet');
+    document.head.appendChild(script);
+  }
+
+  // ── Map init (runs only after Leaflet is loaded) ──────────
+  function initMap() {
+    if (mapInstance) return; // guard against double-init
+
+    const bounds = JA_BOUNDS(L.latLngBounds);
+
+    mapInstance = L.map('map', {
+      center: [18.10, -77.30],
+      zoom: 9,
+      minZoom: 8,          // prevent over-zooming out (fewer tiles)
+      maxZoom: 16,
+      maxBounds: bounds,   // clamps panning to Jamaica only
+      maxBoundsViscosity: 0.85,
+      zoomControl: false,
     });
 
-    // Dark tile layer
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
-        subdomains: 'abcd',
-        maxZoom: 19,
-    }).addTo(map);
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
+      subdomains: 'abcd',
+      maxZoom: 16,
+      // Cache tiles in the browser for 1 hour
+      updateWhenIdle: true,
+      keepBuffer: 1,       // only render 1 tile-width buffer outside viewport
+    }).addTo(mapInstance);
 
-    // Move zoom control to bottom-right
-    L.control.zoom({ position: 'bottomright' }).addTo(map);
+    L.control.zoom({ position: 'bottomright' }).addTo(mapInstance);
 
-    // Custom marker icon matching the site palette
-    const userIcon = L.divIcon({
-        className: '',
-        html: `<div style="
-            width:14px;height:14px;
-            border-radius:50%;
-            background:#f3c511;
-            border:2px solid #1a1a1a;
-            box-shadow:0 0 0 3px rgba(243,197,17,0.35);
-        "></div>`,
-        iconSize: [14, 14],
-        iconAnchor: [7, 7],
-    });
+    initLocation();
+  }
 
-    let userMarker = null;
-    let mapInitialized = false;
+  // ── User location marker ───────────────────────────────────
+  const userIcon = () => L.divIcon({
+    className: '',
+    html: `<div style="
+      width:14px;height:14px;
+      border-radius:50%;
+      background:#f3c511;
+      border:2px solid #1a1a1a;
+      box-shadow:0 0 0 3px rgba(243,197,17,0.35);
+    "></div>`,
+    iconSize: [14, 14],
+    iconAnchor: [7, 7],
+  });
 
-    const statusDot = document.getElementById('status-dot');
-    const statusText = document.getElementById('status-text');
-    const coordsEl = document.getElementById('map-coords');
-    const locateBtn = document.getElementById('locate-btn');
+  let userMarker = null;
 
-    function setStatus(state, text) {
-        if (!statusDot || !statusText) return;
+  const statusDot  = () => document.getElementById('status-dot');
+  const statusText = () => document.getElementById('status-text');
+  const coordsEl   = () => document.getElementById('map-coords');
 
-        // Remove existing status classes
-        statusDot.className = 'map-status__dot';
-        statusDot.classList.add(`map-status__dot--${state}`);
-        statusText.textContent = text;
+  function setStatus(state, text) {
+    const dot = statusDot();
+    const txt = statusText();
+    if (!dot || !txt) return;
+    dot.className = `map-status__dot map-status__dot--${state}`;
+    txt.textContent = text;
+  }
 
-        console.log(`Location status: ${state} - ${text}`); // Debug log
+  function locateUser() {
+    if (!navigator.geolocation) {
+      setStatus('error', 'Geolocation not supported by your browser.');
+      return;
     }
 
-    function locateUser() {
-        console.log('Locate user function called'); // Debug log
+    setStatus('loading', 'Locating…');
 
-        if (!navigator.geolocation) {
-            setStatus('error', 'Geolocation not supported by your browser.');
-            return;
-        }
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        const { latitude: lat, longitude: lng } = pos.coords;
 
-        setStatus('loading', 'Locating…');
-
-        navigator.geolocation.getCurrentPosition(
-            // Success callback
-            pos => {
-                console.log('Location found:', pos.coords); // Debug log
-
-                const { latitude: lat, longitude: lng } = pos.coords;
-
-                // Drop or move marker
-                if (userMarker) {
-                    userMarker.setLatLng([lat, lng]);
-                } else {
-                    userMarker = L.marker([lat, lng], { icon: userIcon })
-                        .addTo(map)
-                        .bindPopup('<strong style="font-family:monospace;font-size:12px;">You are here</strong>', {
-                            className: 'map-popup',
-                        });
-                }
-
-                map.setView([lat, lng], 13, { animate: true });
-                userMarker.openPopup();
-
-                setStatus('ok', 'Location found');
-                if (coordsEl) {
-                    coordsEl.textContent = lat.toFixed(5) + ', ' + lng.toFixed(5);
-                }
-            },
-            // Error callback
-            err => {
-                console.error('Geolocation error:', err); // Debug log
-
-                const msgs = {
-                    1: 'Location access denied. Please allow location access and try again.',
-                    2: 'Location unavailable. Please check your device settings.',
-                    3: 'Location request timed out. Please try again.',
-                };
-                setStatus('error', msgs[err.code] || 'Could not get location.');
-            },
-            {
-                enableHighAccuracy: true,
-                timeout: 10000,
-                maximumAge: 0
-            }
-        );
-    }
-
-    // Function to remove overlay if it exists
-    function removeOverlay() {
-        const existingOverlay = document.getElementById('loc-overlay');
-        if (existingOverlay) {
-            existingOverlay.remove();
-        }
-    }
-
-    // Build and show the permission prompt
-    function buildPrompt() {
-        console.log('Building permission prompt'); // Debug log
-
-        // Remove any existing overlay first
-        removeOverlay();
-
-        const overlay = document.createElement('div');
-        overlay.id = 'loc-overlay';
-        overlay.innerHTML = `
-            <div id="loc-prompt">
-                <div class="loc-prompt__icon">
-                    <svg width="22" height="22" viewBox="0 0 16 16" fill="none">
-                        <circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.5"/>
-                        <path d="M8 1v2M8 13v2M1 8h2M13 8h2"
-                              stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/>
-                    </svg>
-                </div>
-                <h3>Allow location access?</h3>
-                <p>
-                    RoadReady JA would like to show your position on the map so you
-                    can find the nearest TAJ office. Your location is never stored
-                    or shared.
-                </p>
-                <div class="loc-prompt__actions">
-                    <button id="loc-allow">Allow</button>
-                    <button id="loc-deny">Not now</button>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(overlay);
-
-        document.getElementById('loc-allow').addEventListener('click', () => {
-            console.log('User clicked Allow'); // Debug log
-            removeOverlay();
-            locateUser();
-        });
-
-        document.getElementById('loc-deny').addEventListener('click', () => {
-            console.log('User clicked Deny'); // Debug log
-            removeOverlay();
-            setStatus('error', 'Location access not granted.');
-        });
-    }
-
-    // Initialize location handling
-    function initLocation() {
-        console.log('Initializing location...'); // Debug log
-
-        // Check if we're on HTTPS (required for geolocation in modern browsers)
-        if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-            console.warn('Geolocation may require HTTPS'); // Debug log
-            setStatus('error', 'Geolocation requires HTTPS connection.');
-            return;
-        }
-
-        // Check current permission state without triggering the browser dialog
-        if (navigator.permissions) {
-            navigator.permissions.query({ name: 'geolocation' }).then(result => {
-                console.log('Permission state:', result.state); // Debug log
-
-                if (result.state === 'granted') {
-                    // Already allowed — locate straight away
-                    locateUser();
-                } else if (result.state === 'prompt') {
-                    // Not yet asked — show our explanation first
-                    buildPrompt();
-                } else {
-                    // 'denied' — tell the user
-                    setStatus('error', 'Location blocked. Enable it in browser settings.');
-                }
-
-                // React if the user changes the permission while on the page
-                result.onchange = () => {
-                    console.log('Permission changed to:', result.state); // Debug log
-                    if (result.state === 'granted') {
-                        locateUser();
-                    }
-                    if (result.state === 'denied') {
-                        setStatus('error', 'Location blocked. Enable it in browser settings.');
-                    }
-                };
-            }).catch(err => {
-                console.error('Permissions API error:', err); // Debug log
-                // Fallback to prompt
-                buildPrompt();
-            });
+        if (userMarker) {
+          userMarker.setLatLng([lat, lng]);
         } else {
-            // Permissions API not available — fall back to our prompt
-            console.log('Permissions API not available, showing prompt'); // Debug log
-            buildPrompt();
+          userMarker = L.marker([lat, lng], { icon: userIcon() })
+            .addTo(mapInstance)
+            .bindPopup('<strong style="font-family:monospace;font-size:12px;">You are here</strong>', {
+              className: 'map-popup',
+            });
         }
-    }
 
-    // Make sure map is fully loaded before initializing location
-    map.whenReady(() => {
-        console.log('Map is ready'); // Debug log
-        mapInitialized = true;
-        initLocation();
+        mapInstance.setView([lat, lng], 13, { animate: true });
+        userMarker.openPopup();
+
+        setStatus('ok', 'Location found');
+        const coords = coordsEl();
+        if (coords) coords.textContent = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+      },
+      err => {
+        const msgs = {
+          1: 'Location access denied. Enable it in browser settings.',
+          2: 'Location unavailable. Check your device settings.',
+          3: 'Location request timed out. Please try again.',
+        };
+        setStatus('error', msgs[err.code] || 'Could not get location.');
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+    );
+  }
+
+  function removeOverlay() {
+    document.getElementById('loc-overlay')?.remove();
+  }
+
+  function buildPrompt() {
+    removeOverlay();
+    const overlay = document.createElement('div');
+    overlay.id = 'loc-overlay';
+    overlay.innerHTML = `
+      <div id="loc-prompt">
+        <div class="loc-prompt__icon">
+          <svg width="22" height="22" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M8 1v2M8 13v2M1 8h2M13 8h2"
+                  stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/>
+          </svg>
+        </div>
+        <h3>Allow location access?</h3>
+        <p>
+          RoadReady JA would like to show your position on the map so you
+          can find the nearest TAJ office. Your location is never stored or shared.
+        </p>
+        <div class="loc-prompt__actions">
+          <button id="loc-allow">Allow</button>
+          <button id="loc-deny">Not now</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+
+    document.getElementById('loc-allow').addEventListener('click', () => {
+      removeOverlay();
+      locateUser();
     });
+    document.getElementById('loc-deny').addEventListener('click', () => {
+      removeOverlay();
+      setStatus('error', 'Location access not granted.');
+    });
+  }
 
-    // Re-centre button click handler
+  function initLocation() {
+    if (navigator.permissions) {
+      navigator.permissions.query({ name: 'geolocation' }).then(result => {
+        if (result.state === 'granted') {
+          locateUser();
+        } else if (result.state === 'prompt') {
+          buildPrompt();
+        } else {
+          setStatus('error', 'Location blocked. Enable it in browser settings.');
+        }
+        result.onchange = () => {
+          if (result.state === 'granted') locateUser();
+          if (result.state === 'denied')  setStatus('error', 'Location blocked. Enable it in browser settings.');
+        };
+      }).catch(() => buildPrompt());
+    } else {
+      buildPrompt();
+    }
+  }
+
+  // ── Re-centre button ──────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    const locateBtn = document.getElementById('locate-btn');
     if (locateBtn) {
-        locateBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            console.log('Re-centre button clicked'); // Debug log
-            locateUser();
-        });
+      locateBtn.addEventListener('click', e => {
+        e.preventDefault();
+        // If the map hasn't loaded yet (user clicked before scrolling),
+        // load Leaflet now and then locate.
+        if (!mapInstance) {
+          loadLeaflet(initMap);
+        } else {
+          locateUser();
+        }
+      });
     }
 
-    // Also try to initialize if map is already ready
-    if (map._loaded) {
-        console.log('Map already loaded'); // Debug log
-        initLocation();
-    }
-});
+    // ── IntersectionObserver — lazy init ──────────────────
+    // Leaflet JS is not fetched at all until the map section
+    // is within 200px of the viewport.
+    const mapSection = document.getElementById('map-section');
+    if (!mapSection) return;
+
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting) {
+          observer.disconnect();
+          loadLeaflet(initMap);
+        }
+      },
+      { rootMargin: '0px 0px 200px 0px' } // start loading 200px before visible
+    );
+
+    observer.observe(mapSection);
+  });
+})();
