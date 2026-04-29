@@ -5,10 +5,26 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Road Ready JA — Digitally Driving Forward</title>
-  <link rel="stylesheet" href="/public/css/style.css" />
+
+  <!-- Critical CSS first — variables must come before style.css -->
   <link rel="stylesheet" href="/public/css/variables.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="/public/css/style.css" />
+
+  <!-- Leaflet CSS deferred: only needed when map is visible.
+       Using print media trick — browser fetches it low-priority,
+       then onload switches it to all so it applies before the map renders. -->
+  <link rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        media="print"
+        onload="this.media='all'" />
+  <noscript>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  </noscript>
+
   <link rel="icon" type="image/png" href="/public/images/favicon-32x32.png">
+
+  <!-- Preload hero background so it doesn't block LCP -->
+  <link rel="preload" as="image" href="/public/images/back1.jpg" />
 </head>
 
 <body>
@@ -26,12 +42,10 @@
         trips.
       </p>
       <div class="welcome-buttons">
-        <button class="btn-outline" onclick="window.location.href = '/pages/application.html'">
+        <button class="btn-outline" onclick="window.location.href='/pages/application.html'">
           Apply for a Licence
         </button>
-        <button class="btn-outline" onclick="
-              window.location.href = '/pages/application.html?type=renew'
-            ">
+        <button class="btn-outline" onclick="window.location.href='/pages/application.html?type=renew'">
           Renewals &amp; Replacements
         </button>
       </div>
@@ -127,9 +141,7 @@
       <div class="step">
         <div class="step-num">02</div>
         <h4>Submit Your Application</h4>
-        <p>
-          Fill in the online form, upload your documents, and make payment.
-        </p>
+        <p>Fill in the online form, upload your documents, and make payment.</p>
       </div>
       <div class="step-arrow">→</div>
       <div class="step">
@@ -146,10 +158,15 @@
   <!-- ===== ABOUT ===== -->
   <section class="about" id="about">
     <div class="about__image-col">
-      <div class="about__image" style="
-            background: url(&quot;/public/images/back3.jpg&quot;) center/cover
-              no-repeat;
-          "></div>
+      <!-- Use <img> instead of inline background so the browser can
+           lazy-load it and you get proper caching headers -->
+      <img
+        class="about__image"
+        src="/public/images/back3.jpg"
+        alt="Road in Jamaica"
+        loading="lazy"
+        decoding="async"
+      />
     </div>
     <div class="about__text-col">
       <span class="section-eyebrow">About RoadReady JA</span>
@@ -195,10 +212,7 @@
     <div class="section-head">
       <span class="section-eyebrow">Get in touch</span>
       <h2>Contact Us</h2>
-      <p>
-        Have questions about your application or account? Reach out to our
-        team.
-      </p>
+      <p>Have questions about your application or account? Reach out to our team.</p>
     </div>
 
     <div class="contact-layout">
@@ -249,7 +263,7 @@
   <footer class="footer">
     <div class="footer__inner">
       <div class="footer__brand">
-      <img src="/public/images/logo.png" style="width: 160px; height: auto" />
+        <img src="/public/images/logo.png" style="width: 160px; height: auto" alt="Road Ready JA logo" />
         <p>Digitally Driving Forward</p>
       </div>
       <div class="footer__links">
@@ -266,12 +280,13 @@
     </div>
   </footer>
 
-  <!-- Leaflet must load BEFORE map.js -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/public/js/script.js"></script>
-  <script src="/public/js/map.js"></script>
-  <script src="/public/js/theme.js"></script>
-  <script src="/public/components/defaultNavbar.js"></script>
+  <!-- Scripts: defer everything so they don't block HTML parsing.
+       Leaflet is loaded dynamically by map.js only when the map
+       section enters the viewport — see map.js for details. -->
+  <script src="/public/js/script.js" defer></script>
+  <script src="/public/js/map.js" defer></script>
+  <script src="/public/js/theme.js" defer></script>
+  <script src="/public/components/defaultNavbar.js" defer></script>
 </body>
 
 </html>
