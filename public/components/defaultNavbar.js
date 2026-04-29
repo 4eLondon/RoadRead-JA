@@ -11,15 +11,16 @@ class DefaultNavbar extends HTMLElement {
           <li><a href="#about">About Us</a></li>
           <li><a href="#contact">Contact</a></li>
           <li><a href="/pages/dashboard.html">Dashboard</a></li>
-
         </ul>
         <div class="nav-right">
           <button class="login" onclick="window.location.href='/pages/auth.html'">
             Login / Register
           </button>
-          <button id="theme-toggle" class="theme-toggle" aria-label="Switch to light mode"></button>
+          <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme"></button>
         </div>
       </nav>`;
+
+    window.rrjaTheme.init();
   }
 }
 
