@@ -71,29 +71,102 @@
     <!-- RIGHT PANEL -->
     <div class="panel panel-right">
 
-      <!-- Register Form -->
-      <form class="form-wrap" id="form-register" novalidate>
-        <h1>Create Account</h1>
 
-        <div class="field">
-          <input id="reg-name" type="text" name="full_name" placeholder="Full Name" autocomplete="name" />
-          <span class="field-error" id="err-reg-name"></span>
-        </div>
-        <div class="field">
-          <input id="reg-email" type="email" name="email" placeholder="Email" autocomplete="email" />
-          <span class="field-error" id="err-reg-email"></span>
-        </div>
-        <div class="field">
-          <input id="reg-pass" type="password" name="password" placeholder="Password" autocomplete="new-password" />
-          <span class="field-error" id="err-reg-pass"></span>
-        </div>
-        <div class="field">
-          <input id="reg-confirm" type="password" name="confirm_password" placeholder="Confirm Password" autocomplete="new-password" />
-          <span class="field-error" id="err-reg-confirm"></span>
-        </div>
+<form id="form-register" class="form-wrap">
+  <h1>Create Account</h1>
 
-        <button class="btn btn-main" id="signup-btn" type="submit">Sign Up</button>
-      </form>
+  <!-- ── Role selector ── -->
+  <div class="role-selector">
+    <label class="role-option">
+      <input type="radio" name="role" value="citizen" checked />
+      <div class="role-card">
+        <div class="role-dot"></div>
+        <div class="role-info">
+          <span class="role-label">Citizen</span>
+          <span class="role-sublabel">Personal account</span>
+        </div>
+      </div>
+    </label>
+
+    <label class="role-option">
+      <input type="radio" name="role" value="admin" />
+      <div class="role-card">
+        <div class="role-dot"></div>
+        <div class="role-info">
+          <span class="role-label">Admin</span>
+          <span class="role-sublabel">Government worker</span>
+        </div>
+      </div>
+    </label>
+  </div>
+
+  <!-- ── Common fields ── -->
+  <div class="field">
+    <input id="reg-name" type="text" placeholder="Full Name" autocomplete="name" />
+    <span id="err-reg-name" class="field-error"></span>
+  </div>
+
+  <div class="field">
+    <input id="reg-email" type="email" placeholder="Email" autocomplete="email" />
+    <span id="err-reg-email" class="field-error"></span>
+  </div>
+
+  <div class="field">
+    <input id="reg-pass" type="password" placeholder="Password" autocomplete="new-password" />
+    <span id="err-reg-pass" class="field-error"></span>
+  </div>
+
+  <div class="field">
+    <input id="reg-confirm" type="password" placeholder="Confirm Password" autocomplete="new-password" />
+    <span id="err-reg-confirm" class="field-error"></span>
+  </div>
+
+  <div id="admin-section" class="admin-section">
+    <div class="admin-divider">
+      <div class="admin-divider-line"></div>
+      <span class="admin-divider-label">Government Details</span>
+      <div class="admin-divider-line"></div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <input id="reg-employee-id" type="text" placeholder="Employee ID / Badge No." />
+        <span id="err-reg-employee-id" class="field-error"></span>
+      </div>
+      <div class="field">
+        <input id="reg-trn" type="text" placeholder="TRN" maxlength="9" />
+        <span id="err-reg-trn" class="field-error"></span>
+      </div>
+    </div>
+
+    <div class="field">
+      <select id="reg-department">
+        <option value="" disabled selected>Ministry / Department</option>
+        <option value="Ministry of Transport & Mining">Ministry of Transport &amp; Mining</option>
+        <option value="Tax Administration Jamaica">Tax Administration Jamaica</option>
+        <option value="Island Traffic Authority">Island Traffic Authority</option>
+        <option value="Jamaica Constabulary Force">Jamaica Constabulary Force</option>
+        <option value="Ministry of Finance">Ministry of Finance</option>
+        <option value="Other Government Agency">Other Government Agency</option>
+      </select>
+      <span id="err-reg-department" class="field-error"></span>
+    </div>
+
+    <div class="field">
+      <input id="reg-job-title" type="text" placeholder="Job Title / Designation" />
+      <span id="err-reg-job-title" class="field-error"></span>
+    </div>
+
+    <div class="field">
+      <input id="reg-work-phone" type="tel" placeholder="Work Phone Number" autocomplete="tel" />
+      <span id="err-reg-work-phone" class="field-error"></span>
+    </div>
+  </div>
+
+  <button id="signup-btn" type="submit" class="btn btn-main">Sign Up</button>
+</form>
+
+
 
       <!-- Login Form -->
       <form class="form-wrap form-wrap--hidden" id="form-login" novalidate>

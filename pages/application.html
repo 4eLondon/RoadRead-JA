@@ -5,7 +5,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Road Ready JA – Applications</title>
-  <link rel="icon" type="image/png" href="/assets/favicon-32x32.png">
   <link rel="stylesheet" href="/public/css/variables.css" />
   <link rel="stylesheet" href="/public/css/dotnav.css" />
   <link rel="stylesheet" href="/public/css/form.css" />
@@ -79,156 +78,54 @@
 
         <!-- ── APPLY FORM ── -->
         <form class="form-panel" id="form-apply" novalidate>
-
-          <!-- Role selector -->
-          <div class="role-grid">
-            <label class="role-card selected" id="card-citizen" for="role-citizen">
-              <input type="radio" name="apply-role" id="role-citizen" value="citizen" checked />
-              <span class="role-name">Citizen</span>
-              <span class="role-desc">Apply for a new driver's licence</span>
-            </label>
-            <label class="role-card" id="card-official" for="role-official">
-              <input type="radio" name="apply-role" id="role-official" value="official" />
-              <span class="role-name">Official</span>
-              <span class="role-desc">Police, government or licensing authority</span>
-            </label>
-          </div>
-
-          <!-- Citizen fields (shown by default) -->
-          <div id="citizen-fields">
-            <div class="frow">
-              <div class="fgroup">
-                <label class="flabel" for="a-name">Full Name</label>
-                <input class="finput" id="a-name" type="text" placeholder="Jane Doe" />
-                <span class="ferror" id="err-a-name"></span>
-              </div>
-            </div>
-            <div class="frow pair">
-              <div class="fgroup">
-                <label class="flabel" for="a-email">Email</label>
-                <input class="finput" id="a-email" type="email" placeholder="jane@example.com" />
-                <span class="ferror" id="err-a-email"></span>
-              </div>
-              <div class="fgroup">
-                <label class="flabel" for="a-trn">TRN</label>
-                <input class="finput" id="a-trn" type="text" placeholder="000-000-000" maxlength="11" />
-                <span class="ferror" id="err-a-trn"></span>
-              </div>
-            </div>
-            <div class="frow pair">
-              <div class="fgroup">
-                <label class="flabel" for="a-dob">Date of Birth</label>
-                <input class="finput" id="a-dob" type="date" />
-                <span class="ferror" id="err-a-dob"></span>
-              </div>
-              <div class="fgroup">
-                <label class="flabel" for="a-phone">Phone</label>
-                <input class="finput" id="a-phone" type="tel" placeholder="876-000-0000" maxlength="12" />
-                <span class="ferror" id="err-a-phone"></span>
-              </div>
-            </div>
-            <div class="frow pair">
-              <div class="fgroup">
-                <label class="flabel" for="a-pass">Password</label>
-                <input class="finput" id="a-pass" type="password" placeholder="Min. 8 characters" />
-                <div class="strength-bar">
-                  <div class="strength-seg" id="a-seg-1"></div>
-                  <div class="strength-seg" id="a-seg-2"></div>
-                  <div class="strength-seg" id="a-seg-3"></div>
-                  <div class="strength-seg" id="a-seg-4"></div>
-                </div>
-                <span class="strength-label" id="a-strength-label"></span>
-                <span class="ferror" id="err-a-pass"></span>
-              </div>
-              <div class="fgroup">
-                <label class="flabel" for="a-confirm">Confirm Password</label>
-                <input class="finput" id="a-confirm" type="password" placeholder="Repeat password" />
-                <span class="ferror" id="err-a-confirm"></span>
-              </div>
+          <div class="frow">
+            <div class="fgroup">
+              <label class="flabel" for="a-name">Full Name</label>
+              <input class="finput" id="a-name" type="text" placeholder="Jane Doe" />
+              <span class="ferror" id="err-a-name"></span>
             </div>
           </div>
-
-          <!-- Official fields (hidden until role = official) -->
-          <div id="official-fields" class="hidden">
-            <div class="frow">
-              <div class="fgroup">
-                <label class="flabel" for="o-name">Full Name</label>
-                <input class="finput" id="o-name" type="text" placeholder="Jane Doe" />
-                <span class="ferror" id="err-o-name"></span>
-              </div>
+          <div class="frow pair">
+            <div class="fgroup">
+              <label class="flabel" for="a-email">Email</label>
+              <input class="finput" id="a-email" type="email" placeholder="jane@example.com" />
+              <span class="ferror" id="err-a-email"></span>
             </div>
-            <div class="frow pair">
-              <div class="fgroup">
-                <label class="flabel" for="o-email">Email</label>
-                <input class="finput" id="o-email" type="email" placeholder="jane@example.com" />
-                <span class="ferror" id="err-o-email"></span>
-              </div>
-              <div class="fgroup">
-                <label class="flabel" for="o-trn">TRN</label>
-                <input class="finput" id="o-trn" type="text" placeholder="000-000-000" maxlength="11" />
-                <span class="ferror" id="err-o-trn"></span>
-              </div>
+            <div class="fgroup">
+              <label class="flabel" for="a-trn">TRN</label>
+              <input class="finput" id="a-trn" type="text" placeholder="000-000-000" maxlength="11" />
+              <span class="ferror" id="err-a-trn"></span>
             </div>
-            <div class="frow pair">
-              <div class="fgroup">
-                <label class="flabel" for="o-org">Organisation</label>
-                <select class="fselect" id="o-org">
-                  <option value="" disabled selected>Select agency</option>
-                  <option value="jcf">Jamaica Constabulary Force</option>
-                  <option value="tax_admin">Tax Administration Jamaica</option>
-                  <option value="licensing">Licensing Authority</option>
-                  <option value="transport">Ministry of Transport</option>
-                  <option value="customs">Jamaica Customs Agency</option>
-                  <option value="other">Other Government Body</option>
-                </select>
-                <span class="ferror" id="err-o-org"></span>
-              </div>
-              <div class="fgroup">
-                <label class="flabel" for="o-rank">Rank / Title</label>
-                <input class="finput" id="o-rank" type="text" placeholder="e.g. Sergeant" />
-                <span class="ferror" id="err-o-rank"></span>
-              </div>
+          </div>
+          <div class="frow pair">
+            <div class="fgroup">
+              <label class="flabel" for="a-dob">Date of Birth</label>
+              <input class="finput" id="a-dob" type="date" />
+              <span class="ferror" id="err-a-dob"></span>
             </div>
-            <div class="frow pair">
-              <div class="fgroup">
-                <label class="flabel" for="o-badge">Badge / Staff ID</label>
-                <input class="finput" id="o-badge" type="text" placeholder="ID-000000" />
-                <span class="ferror" id="err-o-badge"></span>
-              </div>
-              <div class="fgroup">
-                <label class="flabel" for="o-dept">Department / Station</label>
-                <input class="finput" id="o-dept" type="text" placeholder="e.g. Half Way Tree" />
-                <span class="ferror" id="err-o-dept"></span>
-              </div>
+            <div class="fgroup">
+              <label class="flabel" for="a-phone">Phone</label>
+              <input class="finput" id="a-phone" type="tel" placeholder="876-000-0000" maxlength="12" />
+              <span class="ferror" id="err-a-phone"></span>
             </div>
-            <div class="frow">
-              <div class="fgroup">
-                <label class="flabel" for="o-auth-code">Authorization Code</label>
-                <input class="finput" id="o-auth-code" type="text" placeholder="Provided by your supervisor" />
-                <span class="ferror" id="err-o-auth-code"></span>
+          </div>
+          <div class="frow pair">
+            <div class="fgroup">
+              <label class="flabel" for="a-pass">Password</label>
+              <input class="finput" id="a-pass" type="password" placeholder="Min. 8 characters" />
+              <div class="strength-bar">
+                <div class="strength-seg" id="a-seg-1"></div>
+                <div class="strength-seg" id="a-seg-2"></div>
+                <div class="strength-seg" id="a-seg-3"></div>
+                <div class="strength-seg" id="a-seg-4"></div>
               </div>
+              <span class="strength-label" id="a-strength-label"></span>
+              <span class="ferror" id="err-a-pass"></span>
             </div>
-            <div class="frow pair">
-              <div class="fgroup">
-                <label class="flabel" for="o-pass">Password</label>
-                <input class="finput" id="o-pass" type="password" placeholder="Min. 8 characters" />
-                <div class="strength-bar">
-                  <div class="strength-seg" id="o-seg-1"></div>
-                  <div class="strength-seg" id="o-seg-2"></div>
-                  <div class="strength-seg" id="o-seg-3"></div>
-                  <div class="strength-seg" id="o-seg-4"></div>
-                </div>
-                <span class="strength-label" id="o-strength-label"></span>
-                <span class="ferror" id="err-o-pass"></span>
-              </div>
-              <div class="fgroup">
-                <label class="flabel" for="o-confirm">Confirm Password</label>
-                <input class="finput" id="o-confirm" type="password" placeholder="Repeat password" />
-                <span class="ferror" id="err-o-confirm"></span>
-              </div>
-            </div>
-            <div class="official-note">
-              Official accounts require supervisor verification before full access is granted. You will receive an email once approved.
+            <div class="fgroup">
+              <label class="flabel" for="a-confirm">Confirm Password</label>
+              <input class="finput" id="a-confirm" type="password" placeholder="Repeat password" />
+              <span class="ferror" id="err-a-confirm"></span>
             </div>
           </div>
 
@@ -333,8 +230,6 @@
   <div id="toast" class="toast"></div>
 
   <script src="/public/js/theme.js"></script>
-
-  <!-- Role toggle: runs immediately, no module dependency needed -->
   <script>
     // Tab switcher (needed globally for onclick= in HTML)
     window.switchTab = function(type) {
@@ -359,37 +254,7 @@
       }, { once: true });
     };
 
-    // Role toggle for apply form
-    function updateApplyRole() {
-      const isOfficial = document.querySelector('input[name="apply-role"]:checked')?.value === 'official';
-      document.getElementById('card-citizen').classList.toggle('selected', !isOfficial);
-      document.getElementById('card-official').classList.toggle('selected', isOfficial);
-      document.getElementById('citizen-fields').classList.toggle('hidden', isOfficial);
-      document.getElementById('official-fields').classList.toggle('hidden', !isOfficial);
-      document.getElementById('apply-btn').textContent = isOfficial
-        ? 'Request Official Account'
-        : 'Submit Application';
-    }
-
     document.addEventListener('DOMContentLoaded', function() {
-      // Wire up radio buttons
-      document.querySelectorAll('input[name="apply-role"]').forEach(function(r) {
-        r.addEventListener('change', updateApplyRole);
-      });
-
-      // Wire up card clicks
-      ['card-citizen', 'card-official'].forEach(function(id) {
-        var card = document.getElementById(id);
-        card && card.addEventListener('click', function() {
-          var radio = card.querySelector('input[type="radio"]');
-          if (radio) { radio.checked = true; updateApplyRole(); }
-        });
-      });
-
-      // Run once on load to ensure correct initial state
-      updateApplyRole();
-
-      // URL param: /apply?type=renew
       var urlType = new URLSearchParams(window.location.search).get('type');
       if (urlType === 'renew') switchTab('renew');
     });
