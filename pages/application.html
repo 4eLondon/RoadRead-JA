@@ -93,7 +93,7 @@
             </div>
             <div class="fgroup">
               <label class="flabel" for="a-trn">TRN</label>
-              <input class="finput" id="a-trn" type="text" placeholder="000-000-000" maxlength="11" />
+              <input class="finput" id="a-trn" type="text" placeholder="101010101" maxlength="9" />
               <span class="ferror" id="err-a-trn"></span>
             </div>
           </div>
@@ -103,11 +103,19 @@
               <input class="finput" id="a-dob" type="date" />
               <span class="ferror" id="err-a-dob"></span>
             </div>
-            <div class="fgroup">
-              <label class="flabel" for="a-phone">Phone</label>
-              <input class="finput" id="a-phone" type="tel" placeholder="876-000-0000" maxlength="12" />
-              <span class="ferror" id="err-a-phone"></span>
-            </div>
+
+<div class="fgroup">
+  <label class="flabel" for="a-phone">Phone</label>
+  <div style="display:flex; gap:0.4rem;">
+    <select class="fselect" id="a-phone-code" style="width:110px; flex-shrink:0;">
+      <option value="+1876">+1 (876)</option>
+      <option value="+1658">+1 (658)</option>
+    </select>
+    <input class="finput" id="a-phone" type="tel" placeholder="0000000" maxlength="7" />
+  </div>
+  <span class="ferror" id="err-a-phone"></span>
+</div>
+
           </div>
           <div class="frow pair">
             <div class="fgroup">

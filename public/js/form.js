@@ -40,6 +40,73 @@ function validate(rules) {
   return ok;
 }
 
+
+function validatePassword(pass, confirm) {
+  if (pass.length < 8)
+    return { passErr: "Password must be at least 8 characters.", confirmErr: "" };
+  if (!/[A-Z]/.test(pass))
+    return { passErr: "Password must contain at least one capital letter.", confirmErr: "" };
+  if (!/[0-9]/.test(pass))
+    return { passErr: "Password must contain at least one number.", confirmErr: "" };
+  if (pass !== confirm)
+    return { passErr: "", confirmErr: "Passwords do not match." };
+  return { passErr: "", confirmErr: "" };
+}
+
+document.getElementById("a-phone").addEventListener("input", (e) => {
+  e.target.value = e.target.value.replace(/\D/g, "").slice(0, 7);
+});
+
+function validatePhone(val) {
+  const digits = val.replace(/\D/g, "");
+  if (digits.length !== 7) return "Enter exactly 7 digits after the area code.";
+  return "";
+}
+
+
+function validateDOB(val) {
+  if (!val) return "Date of birth is required.";
+  const today = new Date();
+  const dob   = new Date(val);
+  if (dob > today) return "Date of birth cannot be in the future.";
+  let age = today.getFullYear() - dob.getFullYear();
+  const m = today.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+  if (age < 18)  return "You must be at least 18 years old.";
+  if (age > 100) return "Please enter a valid date of birth.";
+  return "";
+}
+
+document.getElementById("a-trn").addEventListener("input", (e) => {
+  let v = e.target.value.replace(/\D/g, "").slice(0, 9);
+  if (v.length > 6)      v = `${v.slice(0,3)}-${v.slice(3,6)}-${v.slice(6)}`;
+  else if (v.length > 3) v = `${v.slice(0,3)}-${v.slice(3)}`;
+  e.target.value = v;
+});
+
+function validateTRN(val) {
+  const digits = val.replace(/\D/g, "");
+  if (digits.length !== 9) return "TRN must be exactly 9 digits.";
+  return "";
+}
+
+const COMMON_PROVIDERS = [
+  "gmail.com","yahoo.com","outlook.com","hotmail.com","icloud.com",
+  "live.com","msn.com","me.com","aol.com","protonmail.com"
+];
+
+function validateEmail(val) {
+  const basic = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(val);
+  if (!basic) return "Enter a valid email address.";
+  const domain = val.split("@")[1].toLowerCase();
+  if (!COMMON_PROVIDERS.includes(domain))
+    return "Please use a common provider (e.g. Gmail, Yahoo, Outlook).";
+  return "";
+}
+
+
+
+
 // ── Toast ──────────────────────────────────────────────────
 
 function showToast(msg, isError = false) {
@@ -78,22 +145,48 @@ function showSuccess(title, appId, userId) {
 document.getElementById("form-apply").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const ok = validate([
-    ["a-name",  "err-a-name",  "Full name is required."],
-    ["a-email", "err-a-email", "Email is required."],
-    ["a-trn",   "err-a-trn",   "TRN is required."],
-    ["a-dob",   "err-a-dob",   "Date of birth is required."],
-    ["a-phone", "err-a-phone", "Phone number is required."],
-  ]);
 
-  const pass = document.getElementById("a-pass").value;
+ let ok = true;
+
+  // Name
+  const name = document.getElementById("a-name").value.trim();
+  if (!name) { setErr("err-a-name", "Full name is required."); ok = false; }
+  else setErr("err-a-name", "");
+
+  // Email
+  const emailErr = validateEmail(document.getElementById("a-email").value.trim());
+  if (emailErr) { setErr("err-a-email", emailErr); ok = false; }
+  else setErr("err-a-email", "");
+
+  // TRN
+  const trnErr = validateTRN(document.getElementById("a-trn").value.trim());
+  if (trnErr) { setErr("err-a-trn", trnErr); ok = false; }
+  else setErr("err-a-trn", "");
+
+  // DOB
+  const dobErr = validateDOB(document.getElementById("a-dob").value);
+  if (dobErr) { setErr("err-a-dob", dobErr); ok = false; }
+  else setErr("err-a-dob", "");
+
+  // Phone
+  const phoneErr = validatePhone(document.getElementById("a-phone").value);
+  if (phoneErr) { setErr("err-a-phone", phoneErr); ok = false; }
+  else setErr("err-a-phone", "");
+    
+  const fullPhone = document.getElementById("a-phone-code").value
+                + document.getElementById("a-phone").value;
+
+  // Password
+  const pass    = document.getElementById("a-pass").value;
   const confirm = document.getElementById("a-confirm").value;
-  if (!pass || pass.length < 8) { setErr("err-a-pass", "Password must be at least 8 characters."); return; }
-  else setErr("err-a-pass", "");
-  if (pass !== confirm) { setErr("err-a-confirm", "Passwords do not match."); return; }
-  else setErr("err-a-confirm", "");
+  const { passErr, confirmErr } = validatePassword(pass, confirm);
+  if (passErr)    { setErr("err-a-pass",    passErr);    ok = false; }
+  else             setErr("err-a-pass", "");
+  if (confirmErr) { setErr("err-a-confirm", confirmErr); ok = false; }
+  else             setErr("err-a-confirm", "");
 
   if (!ok) return;
+
 
   const appId = uuid();
   const userId = uuid();
@@ -105,7 +198,7 @@ document.getElementById("form-apply").addEventListener("submit", async (e) => {
     email: document.getElementById("a-email").value.trim(),
     TRN: document.getElementById("a-trn").value.trim(),
     date_of_birth: document.getElementById("a-dob").value,
-    phone: document.getElementById("a-phone").value.trim(),
+    phone: fullPhone,
     role: "citizen",
     status: "active",
   });
