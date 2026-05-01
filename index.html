@@ -258,12 +258,51 @@
     </div>
   </section>
 
+  <!-- Add this section to index.html before the footer -->
+<section id="commits" class="commits-section">
+  <div class="section-head">
+    <span class="section-eyebrow">Development</span>
+    <h2>Recent Updates</h2>
+    <p>Live updates from our GitHub repository. Track progress, view changes, and stay informed.</p>
+  </div>
+
+  <div class="commits-container">
+    <div class="commits-header">
+      <div class="commits-repo">
+        <span class="commits-repo__icon">⬢</span>
+        <a href="https://github.com/4eLondon/RoadRead-JA" target="_blank" rel="noopener">
+          4eLondon/RoadRead-JA
+        </a>
+      </div>
+      <button class="commits-refresh" id="commits-refresh" aria-label="Refresh commits">
+        ↻ Refresh
+      </button>
+    </div>
+
+    <div class="commits-status" id="commits-status">
+      <span class="commits-status__dot commits-status__dot--loading"></span>
+      <span class="commits-status__text">Loading commits…</span>
+    </div>
+
+    <ul class="commits-list" id="commits-list" aria-live="polite">
+      <!-- Commits injected by JS -->
+    </ul>
+
+    <div class="commits-footer">
+      <a href="https://github.com/4eLondon/RoadRead-JA/commits" target="_blank" rel="noopener" class="commits-viewall">
+        View all commits on GitHub →
+      </a>
+    </div>
+  </div>
+</section>
+
     <!-- ===== NAVBAR ===== -->
   <default-footer></default-footer>
 
   <script src="/public/js/script.js" defer></script>
   <script src="/public/js/map.js" defer></script>
   <script src="/public/js/theme.js" defer></script>
+  <script src="/public/js/commits.js" defer></script>
   <script src="/public/components/defaultNavbar.js" defer></script>
   <script src="/public/components/defaultFooter.js" defer></script>
 </body>
