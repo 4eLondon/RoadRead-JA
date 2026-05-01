@@ -7,12 +7,12 @@
  */
 
 const COMMITS_CONFIG = {
-  owner:     '4eLondon',
-  repo:      'RoadRead-JA',
-  apiUrl:    'https://api.github.com/repos/4eLondon/RoadRead-JA/commits',
-  repoUrl:   'https://github.com/4eLondon/RoadRead-JA',
-  maxItems:  8,
-  cacheTTL:  5 * 60 * 1000   // 5 minutes
+  owner:    '4eLondon',
+  repo:     'RoadRead-JA',
+  apiUrl:   '/.netlify/functions/commits',   // proxied — no token in browser
+  repoUrl:  'https://github.com/4eLondon/RoadRead-JA',
+  maxItems: 8,
+  cacheTTL: 5 * 60 * 1000   // 5 minutes
 };
 
 class CommitsLoader {
@@ -51,7 +51,7 @@ class CommitsLoader {
 
     try {
       const res = await fetch(COMMITS_CONFIG.apiUrl, {
-        headers: { Accept: 'application/vnd.github.v3+json' }
+        headers: { Accept: 'application/json' }
       });
 
       if (res.status === 403 || res.status === 429) {

@@ -9,6 +9,9 @@
   to = "/index.html"
   status = 200
 
+[functions]
+  directory = "netlify/functions"
+
 # ── Cache headers ─────────────────────────────────────────────────────────────
 # Netlify serves real files first, so these headers apply to actual assets.
 # The /* redirect above only fires for paths with no matching file on disk.
