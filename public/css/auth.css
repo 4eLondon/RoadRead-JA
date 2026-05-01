@@ -700,3 +700,29 @@ RESPONSIVE
   cursor: not-allowed;
   border-color: var(--accent);
 }
+
+/* ── Password strength bar ───────────────────────────────── */
+.strength-bar {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.strength-seg {
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--border);
+  transition: background-color 0.3s ease;
+}
+
+.strength-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 4px;
+  min-height: 1em;
+  transition: color 0.3s ease;
+}

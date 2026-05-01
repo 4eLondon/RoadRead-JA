@@ -2,10 +2,10 @@
 (function () {
   const LEAFLET_JS = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
 
-  const JA_BOUNDS = L_bounds => L_bounds([
-    [17.70, -78.40],
-    [18.55, -76.18],
-  ]);
+  // FIX 1: JA_BOUNDS was calling L.latLngBounds with a single array argument.
+  // L.latLngBounds expects two separate (sw, ne) arguments.
+  // Changed to a plain function that creates the bounds correctly.
+  const JA_BOUNDS = () => L.latLngBounds([17.70, -78.40], [18.55, -76.18]);
 
   let leafletLoaded = false;
   let mapInstance   = null;
@@ -45,7 +45,12 @@
   function initMap() {
     if (mapInstance) return;
 
-    const bounds = JA_BOUNDS(L.latLngBounds);
+    // FIX 2: buildSidebar() MUST run before L.map() is called.
+    // Previously it ran after, which wiped out the #map div that
+    // Leaflet had already bound to, orphaning the map instance entirely.
+    buildSidebar();
+
+    const bounds = JA_BOUNDS(); // FIX 1 applied here
 
     mapInstance = L.map('map', {
       center: [18.10, -77.30],
@@ -67,7 +72,6 @@
 
     L.control.zoom({ position: 'bottomright' }).addTo(mapInstance);
 
-    buildSidebar();   // build DOM structure first (creates #map div)
     placeTAJMarkers();
     initLocation();
   }
@@ -142,15 +146,18 @@
     mapDiv.id = 'map';
     mapPanel.appendChild(mapDiv);
 
-    // Map overlay buttons
+    // FIX 3: Share button gets a distinct pin/share icon so it's not
+    // identical to the Re-centre button, preventing user confusion.
     const shareBtn = document.createElement('button');
     shareBtn.id = 'share-location-btn';
     shareBtn.className = 'map-locate-btn';
+    shareBtn.style.top = '52px'; // stack below Re-centre
     shareBtn.title = 'Share my location';
     shareBtn.innerHTML = `
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-        <circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.5"/>
-        <path d="M8 1v2M8 13v2M1 8h2M13 8h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/>
+        <circle cx="8" cy="4" r="2.5" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M8 15 C8 15 3 9.5 3 6.5a5 5 0 0 1 10 0C13 9.5 8 15 8 15Z"
+              stroke="currentColor" stroke-width="1.5" fill="none"/>
       </svg>Share Location`;
 
     const locBtn = document.createElement('button');
@@ -163,8 +170,8 @@
         <path d="M8 1v2M8 13v2M1 8h2M13 8h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/>
       </svg>Re-centre`;
 
-    mapPanel.appendChild(shareBtn);
     mapPanel.appendChild(locBtn);
+    mapPanel.appendChild(shareBtn);
 
     mapWrap.appendChild(sidebar);
     mapWrap.appendChild(mapPanel);
@@ -255,7 +262,7 @@
     document.getElementById('locate-btn')?.addEventListener('click', e => {
       e.preventDefault();
       if (!mapInstance) loadLeaflet(initMap);
-      else if (userMarker) locateUser();
+      else if (userLatLng) locateUser();   // FIX 4: was checking userMarker; use userLatLng
       else buildPrompt();
     });
 
@@ -369,13 +376,25 @@
   function initLocation() {
     if (navigator.permissions) {
       navigator.permissions.query({ name: 'geolocation' }).then(result => {
-        if (result.state === 'granted') locateUser();
+        // FIX 5: Previously 'prompt' state was silently ignored, leaving
+        // first-time visitors stuck on "Waiting for location…" with no prompt.
+        // Now we call buildPrompt() for the 'prompt' state so they see the dialog.
+        if (result.state === 'granted')  locateUser();
+        else if (result.state === 'prompt') buildPrompt();
         else if (result.state === 'denied') setStatus('error', 'Location blocked. Enable it in browser settings.');
+
         result.onchange = () => {
           if (result.state === 'granted') locateUser();
-          if (result.state === 'denied') setStatus('error', 'Location blocked.');
+          if (result.state === 'denied')  setStatus('error', 'Location blocked.');
         };
-      }).catch(() => {});
+      }).catch(() => {
+        // Permissions API not available — fall back to showing the prompt
+        // so the user still has a way to grant access.
+        buildPrompt();
+      });
+    } else {
+      // No Permissions API (e.g. older browsers) — show prompt directly
+      buildPrompt();
     }
   }
 
