@@ -1,21 +1,36 @@
 # netlify.toml — Road Ready JA
 
-# ── SPA redirect ──────────────────────────────────────────────────────────────
-# IMPORTANT: This must stay. It catches unknown routes and serves index.html
-# so client-side navigation works. Netlify evaluates [[headers]] before
-# [[redirects]], so static files are served correctly before this fires.
+# ── Functions ──────────────────────────────────────────────────────────────────
+[functions]
+  directory = "netlify/functions"
+
+# ── Redirects ─────────────────────────────────────────────────────────────────
+# Static asset pass-throughs MUST come before the SPA catch-all.
+# Without these, some Netlify edge nodes serve index.html for .js/.css files,
+# causing "MIME type is text/html" errors in Firefox and Safari.
+
+[[redirects]]
+  from = "/public/*"
+  to = "/public/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/pages/*"
+  to = "/pages/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/netlify/functions/*"
+  to = "/netlify/functions/:splat"
+  status = 200
+
+# SPA catch-all — MUST be last. Only fires when no real file matched above.
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
-[functions]
-  directory = "netlify/functions"
-
 # ── Cache headers ─────────────────────────────────────────────────────────────
-# Netlify serves real files first, so these headers apply to actual assets.
-# The /* redirect above only fires for paths with no matching file on disk.
-
 [[headers]]
   for = "/public/css/*"
   [headers.values]
@@ -36,7 +51,7 @@
   [headers.values]
     Cache-Control = "public, max-age=86400, stale-while-revalidate=604800"
 
-# HTML pages — always revalidate so deploys are seen immediately
+# HTML — always revalidate so deploys are seen immediately
 [[headers]]
   for = "/*.html"
   [headers.values]
