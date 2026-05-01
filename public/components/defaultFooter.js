@@ -23,7 +23,9 @@ class DefaultFooter extends HTMLElement {
     </div>
   </footer>`;
 
+        if (window.rrjaTheme) {
     window.rrjaTheme.init();
+        }
   }
 }
 

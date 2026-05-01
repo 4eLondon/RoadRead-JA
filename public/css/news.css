@@ -1,0 +1,333 @@
+/* ══════════════════════════════════════════════════════════
+   COMMITS SECTION — RoadReady JA
+   Standalone stylesheet. Drop into /public/css/commits.css
+   and link AFTER variables.css in your HTML.
+══════════════════════════════════════════════════════════ */
+
+/* ── Section wrapper ──────────────────────────────────── */
+.commits-section {
+  padding: 88px 60px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+
+/* ── Centred card container ───────────────────────────── */
+.commits-container {
+  max-width: 760px;
+  margin: 0 auto;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+/* ── Card header row ──────────────────────────────────── */
+.commits-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
+}
+
+.commits-repo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.commits-repo__icon {
+  font-size: 0.9rem;
+  color: var(--green);
+  line-height: 1;
+}
+
+.commits-repo a {
+  color: var(--text);
+  text-decoration: none;
+  transition: color var(--tr);
+}
+
+.commits-repo a:hover {
+  color: var(--accent);
+}
+
+.commits-refresh {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 6px 14px;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: border-color var(--tr), color var(--tr), transform 0.1s;
+  flex-shrink: 0;
+}
+
+.commits-refresh:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.commits-refresh:active {
+  transform: translateY(1px);
+}
+
+.commits-refresh.is-spinning {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* ── Status bar ───────────────────────────────────────── */
+.commits-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.commits-status__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border);
+  flex-shrink: 0;
+  transition: background 0.3s;
+}
+
+.commits-status__dot--loading {
+  background: var(--accent);
+  animation: crDotPulse 1.2s ease-in-out infinite;
+}
+
+.commits-status__dot--ok {
+  background: var(--green);
+}
+
+.commits-status__dot--error {
+  background: var(--error);
+}
+
+@keyframes crDotPulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.25; }
+}
+
+/* ── Commit list ──────────────────────────────────────── */
+.commits-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 440px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.commits-list::-webkit-scrollbar        { width: 4px; }
+.commits-list::-webkit-scrollbar-track  { background: transparent; }
+.commits-list::-webkit-scrollbar-thumb  { background: var(--border); border-radius: 2px; }
+.commits-list::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ── Single commit row ────────────────────────────────── */
+.commit-item {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto auto;
+  column-gap: 12px;
+  row-gap: 4px;
+  align-items: start;
+  transition: background var(--tr);
+}
+
+.commit-item:last-child {
+  border-bottom: none;
+}
+
+.commit-item:hover {
+  background: var(--surface);
+}
+
+/* Avatar */
+.commit-avatar {
+  grid-row: 1 / 3;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--btn-text);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  margin-top: 1px;
+}
+
+.commit-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* Author + date on same row */
+.commit-meta {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.commit-author {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.04em;
+}
+
+.commit-date {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-subtle);
+  white-space: nowrap;
+}
+
+/* Message */
+.commit-message {
+  grid-column: 2;
+  grid-row: 2;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+/* SHA badge */
+.commit-sha {
+  grid-column: 3;
+  grid-row: 1 / 3;
+  align-self: center;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 3px 8px;
+  white-space: nowrap;
+  transition: border-color var(--tr), color var(--tr);
+}
+
+.commit-sha:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+/* ── Empty / Error states ─────────────────────────────── */
+.commits-empty,
+.commits-error {
+  padding: 40px 20px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.commits-error {
+  color: var(--error);
+}
+
+.commits-error a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color var(--tr);
+}
+
+.commits-error a:hover {
+  color: var(--text);
+}
+
+/* ── Footer link ──────────────────────────────────────── */
+.commits-footer {
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+  background: var(--surface-2);
+  text-align: center;
+}
+
+.commits-viewall {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color var(--tr);
+}
+
+.commits-viewall:hover {
+  color: var(--accent);
+}
+
+/* ── Responsive ───────────────────────────────────────── */
+@media (max-width: 900px) {
+  .commits-section {
+    padding: 56px 28px;
+  }
+}
+
+@media (max-width: 600px) {
+  .commits-section {
+    padding: 44px 16px;
+  }
+
+  .commits-header {
+    flex-wrap: wrap;
+  }
+
+  .commit-item {
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto auto;
+  }
+
+  .commit-sha {
+    grid-column: 2;
+    grid-row: 3;
+    justify-self: start;
+    margin-top: 6px;
+  }
+
+  .commit-date {
+    display: block;
+    margin-top: 2px;
+  }
+}

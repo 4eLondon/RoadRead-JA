@@ -1,98 +1,121 @@
 /**
- * GitHub Commits Loader for RoadReady JA
- * Fetches and displays recent commits from the project repository.
+ * commits.js — GitHub Commits Loader for RoadReady JA
+ * Fetches recent commits from https://github.com/4eLondon/RoadRead-JA
+ *
+ * Drop into /public/js/commits.js and add to your HTML:
+ *   <script src="/public/js/commits.js" defer></script>
  */
 
 const COMMITS_CONFIG = {
-  repo: '4eLondon/RoadRead-JA',
-  apiUrl: 'https://api.github.com/repos/4eLondon/RoadRead-JA/commits',
-  maxCommits: 8,
-  cacheTTL: 5 * 60 * 1000 // 5 minutes
+  owner:     '4eLondon',
+  repo:      'RoadRead-JA',
+  apiUrl:    'https://api.github.com/repos/4eLondon/RoadRead-JA/commits',
+  repoUrl:   'https://github.com/4eLondon/RoadRead-JA',
+  maxItems:  8,
+  cacheTTL:  5 * 60 * 1000   // 5 minutes
 };
 
 class CommitsLoader {
   constructor() {
-    this.listEl = document.getElementById('commits-list');
-    this.statusEl = document.getElementById('commits-status');
-    this.refreshBtn = document.getElementById('commits-refresh');
-    this.cacheKey = 'roadready_commits_cache';
-    this.init();
-  }
+    this.listEl      = document.getElementById('commits-list');
+    this.statusEl    = document.getElementById('commits-status');
+    this.refreshBtn  = document.getElementById('commits-refresh');
+    this.cacheKey    = 'rr_commits_v1';
 
-  init() {
+    if (!this.listEl) return;   // section not present on this page
+
     if (this.refreshBtn) {
-      this.refreshBtn.addEventListener('click', () => this.fetchCommits(true));
+      this.refreshBtn.addEventListener('click', () => {
+        this.refreshBtn.classList.add('is-spinning');
+        this.refreshBtn.textContent = '↻ Loading…';
+        this.load(true);
+      });
     }
-    this.fetchCommits();
+
+    this.load();
   }
 
-  async fetchCommits(forceRefresh = false) {
+  /* ── Public entry point ─────────────────────────── */
+  async load(forceRefresh = false) {
     this.setStatus('loading', 'Loading commits…');
 
-    // Check cache first
     if (!forceRefresh) {
-      const cached = this.getCachedCommits();
+      const cached = this.readCache();
       if (cached) {
-        this.renderCommits(cached);
-        this.setStatus('ok', 'Updated just now');
+        this.render(cached);
+        this.setStatus('ok', 'Cached · refreshes every 5 min');
+        this.resetRefreshBtn();
         return;
       }
     }
 
     try {
-      const response = await fetch(COMMITS_CONFIG.apiUrl, {
-        headers: { 'Accept': 'application/vnd.github.v3+json' }
+      const res = await fetch(COMMITS_CONFIG.apiUrl, {
+        headers: { Accept: 'application/vnd.github.v3+json' }
       });
 
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      if (res.status === 403 || res.status === 429) {
+        throw new Error('rate_limited');
+      }
+      if (!res.ok) {
+        throw new Error(`http_${res.status}`);
+      }
 
-      const allCommits = await response.json();
-      const commits = allCommits.slice(0, COMMITS_CONFIG.maxCommits);
-      this.cacheCommits(commits);
-      this.renderCommits(commits);
-      this.setStatus('ok', 'Updated just now');
+      const all     = await res.json();
+      const commits = all.slice(0, COMMITS_CONFIG.maxItems);
+
+      this.writeCache(commits);
+      this.render(commits);
+      this.setStatus('ok', `Updated just now · ${commits.length} commits shown`);
     } catch (err) {
-      console.error('Failed to fetch commits:', err);
-      this.renderError();
-      this.setStatus('error', 'Failed to load commits');
+      console.warn('[CommitsLoader]', err.message);
+      this.renderError(err.message === 'rate_limited');
+      this.setStatus('error', err.message === 'rate_limited'
+        ? 'GitHub rate limit reached — try again later'
+        : 'Could not reach GitHub'
+      );
+    } finally {
+      this.resetRefreshBtn();
     }
   }
 
-  getCachedCommits() {
+  /* ── Cache helpers ──────────────────────────────── */
+  readCache() {
     try {
       const raw = localStorage.getItem(this.cacheKey);
       if (!raw) return null;
-      const { timestamp, data } = JSON.parse(raw);
-      if (Date.now() - timestamp > COMMITS_CONFIG.cacheTTL) return null;
+      const { ts, data } = JSON.parse(raw);
+      if (Date.now() - ts > COMMITS_CONFIG.cacheTTL) return null;
       return data;
-    } catch {
-      return null;
-    }
+    } catch { return null; }
   }
 
-  cacheCommits(commits) {
+  writeCache(commits) {
     try {
-      localStorage.setItem(this.cacheKey, JSON.stringify({
-        timestamp: Date.now(),
-        data: commits
-      }));
-    } catch (e) {
-      // Ignore quota errors
-    }
+      localStorage.setItem(this.cacheKey, JSON.stringify({ ts: Date.now(), data: commits }));
+    } catch { /* quota — ignore */ }
   }
 
+  /* ── Status indicator ───────────────────────────── */
   setStatus(state, text) {
     if (!this.statusEl) return;
     const dot = this.statusEl.querySelector('.commits-status__dot');
     const txt = this.statusEl.querySelector('.commits-status__text');
     if (dot) {
-      dot.className = 'commits-status__dot';
-      dot.classList.add(`commits-status__dot--${state}`);
+      dot.className = `commits-status__dot commits-status__dot--${state}`;
     }
     if (txt) txt.textContent = text;
   }
 
-  renderCommits(commits) {
+  /* ── Refresh button reset ───────────────────────── */
+  resetRefreshBtn() {
+    if (!this.refreshBtn) return;
+    this.refreshBtn.classList.remove('is-spinning');
+    this.refreshBtn.textContent = '↻ Refresh';
+  }
+
+  /* ── Render commit list ─────────────────────────── */
+  render(commits) {
     if (!this.listEl) return;
 
     if (!commits || commits.length === 0) {
@@ -101,71 +124,85 @@ class CommitsLoader {
     }
 
     this.listEl.innerHTML = commits.map(item => {
-      const { sha, commit, author, html_url } = item;
-      const shortSha = sha.slice(0, 7);
-      const date = new Date(commit.author.date);
-      const authorName = commit.author.name;
-      const initials = this.getInitials(authorName);
-      const avatar = author?.avatar_url;
+      /* NOTE: 'item' is the full API object; item.commit is the nested
+         commit data object.  Using different names avoids shadowing. */
+      const sha      = item.sha;
+      const data     = item.commit;          // ← the nested commit object
+      const ghAuthor = item.author;          // ← GitHub user object (may be null)
+
+      const shortSha   = sha.slice(0, 7);
+      const date       = new Date(data.author.date);
+      const authorName = data.author.name;
+      const avatar     = ghAuthor?.avatar_url ?? null;
+      const initials   = this.initials(authorName);
+      const profileUrl = ghAuthor?.html_url  ?? `${COMMITS_CONFIG.repoUrl}/commits`;
 
       return `
         <li class="commit-item">
-          <div class="commit-meta">
-            <div class="commit-avatar">
-              ${avatar ? `<img src="${avatar}" alt="${authorName}" loading="lazy">` : initials}
-            </div>
-            <span class="commit-author">${this.escapeHtml(authorName)}</span>
-            <time class="commit-date" datetime="${date.toISOString()}">
-              ${this.formatDate(date)}
-            </time>
-          </div>
-          <p class="commit-message">${this.escapeHtml(commit.message.split('\n')[0])}</p>
-          <a href="${html_url}" target="_blank" rel="noopener" class="commit-sha" title="View commit on GitHub">
-            ${shortSha}
+          <a class="commit-avatar" href="${profileUrl}" target="_blank" rel="noopener" title="${this.esc(authorName)}">
+            ${avatar
+              ? `<img src="${avatar}" alt="${this.esc(authorName)}" loading="lazy">`
+              : initials}
           </a>
+          <div class="commit-meta">
+            <span class="commit-author">${this.esc(authorName)}</span>
+            <time class="commit-date" datetime="${date.toISOString()}">${this.ago(date)}</time>
+          </div>
+          <p class="commit-message">${this.esc(data.message.split('\n')[0])}</p>
+          <a class="commit-sha"
+             href="${item.html_url}"
+             target="_blank"
+             rel="noopener"
+             title="View commit on GitHub">${shortSha}</a>
         </li>
       `;
     }).join('');
   }
 
-  renderError() {
+  /* ── Error state ────────────────────────────────── */
+  renderError(rateLimit = false) {
     if (!this.listEl) return;
+    const msg = rateLimit
+      ? 'GitHub API rate limit reached. No auth token is set.'
+      : 'Could not load commits.';
     this.listEl.innerHTML = `
       <li class="commits-error">
-        Could not load commits. <a href="https://github.com/${COMMITS_CONFIG.repo}/commits" target="_blank" rel="noopener" style="color:var(--accent)">View on GitHub</a>
-      </li>
-    `;
+        ${msg}
+        <br><br>
+        <a href="${COMMITS_CONFIG.repoUrl}/commits" target="_blank" rel="noopener">
+          View commits on GitHub →
+        </a>
+      </li>`;
   }
 
-  getInitials(name) {
+  /* ── Utilities ──────────────────────────────────── */
+  initials(name) {
     if (!name) return '?';
-    const parts = name.trim().split(' ');
+    const parts = name.trim().split(/\s+/);
     if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   }
 
-  formatDate(date) {
-    const now = new Date();
-    const diff = now - date;
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-
-    if (minutes < 1) return 'just now';
+  ago(date) {
+    const diff    = Date.now() - date;
+    const minutes = Math.floor(diff / 60_000);
+    const hours   = Math.floor(diff / 3_600_000);
+    const days    = Math.floor(diff / 86_400_000);
+    if (minutes < 1)  return 'just now';
     if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    if (days < 7) return `${days}d ago`;
+    if (hours   < 24) return `${hours}h ago`;
+    if (days    <  7) return `${days}d ago`;
     return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
   }
 
-  escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
+  esc(str) {
+    const d = document.createElement('div');
+    d.textContent = str ?? '';
+    return d.innerHTML;
   }
 }
 
-// Initialize when DOM is ready
+/* ── Boot ───────────────────────────────────────────── */
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => new CommitsLoader());
 } else {

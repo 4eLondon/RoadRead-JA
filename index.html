@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="/public/css/variables.css" />
   <link rel="stylesheet" href="/public/css/style.css" />
   <link rel="stylesheet" href="/public/css/mapsidebar.css" />
+  <link rel="stylesheet" href="/public/css/news.css" />
 
   <!-- Leaflet CSS deferred: only needed when map is visible.
        Using print media trick — browser fetches it low-priority,
@@ -264,38 +265,51 @@
     <h2>Recent Updates</h2>
     <p>Live updates from our GitHub repository. Track progress, view changes, and stay informed.</p>
   </div>
-
+ 
   <div class="commits-container">
+ 
+    <!-- Header bar -->
     <div class="commits-header">
       <div class="commits-repo">
-        <span class="commits-repo__icon">⬢</span>
-        <a href="https://github.com/4eLondon/RoadRead-JA" target="_blank" rel="noopener">
-          4eLondon/RoadRead-JA
+        <span class="commits-repo__icon">⬡</span>
+        <a href="https://github.com/4eLondon/RoadRead-JA"
+           target="_blank"
+           rel="noopener">
+          4eLondon / RoadRead-JA
         </a>
       </div>
       <button class="commits-refresh" id="commits-refresh" aria-label="Refresh commits">
         ↻ Refresh
       </button>
     </div>
-
+ 
+    <!-- Status indicator -->
     <div class="commits-status" id="commits-status">
       <span class="commits-status__dot commits-status__dot--loading"></span>
       <span class="commits-status__text">Loading commits…</span>
     </div>
-
-    <ul class="commits-list" id="commits-list" aria-live="polite">
-      <!-- Commits injected by JS -->
-    </ul>
-
+ 
+    <!-- Commit rows injected by commits.js -->
+    <ul class="commits-list" id="commits-list" aria-live="polite" aria-label="Recent commits"></ul>
+ 
+    <!-- Footer -->
     <div class="commits-footer">
-      <a href="https://github.com/4eLondon/RoadRead-JA/commits" target="_blank" rel="noopener" class="commits-viewall">
+      <a class="commits-viewall"
+         href="https://github.com/4eLondon/RoadRead-JA/commits"
+         target="_blank"
+         rel="noopener">
         View all commits on GitHub →
       </a>
     </div>
+ 
   </div>
 </section>
 
-    <!-- ===== NAVBAR ===== -->
+
+
+
+
+    <!-- ===== Footer ===== -->
   <default-footer></default-footer>
 
   <script src="/public/js/theme.js" defer></script>
