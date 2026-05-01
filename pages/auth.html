@@ -13,6 +13,9 @@
 
 
 <body>
+      <!-- ===== NAVBAR ===== -->
+  <default-navbar></default-navbar>
+
 
   <!-- Main Card Container -->
   <div class="card" id="card">
@@ -76,10 +79,19 @@
           <input type="email" id="reg-email" placeholder="Email" />
           <span id="err-reg-email" class="field-error"></span>
         </div>
-        <div class="field">
-          <input type="password" id="reg-pass" placeholder="Password" />
-          <span id="err-reg-pass" class="field-error"></span>
-        </div>
+
+<div class="field">
+  <input type="password" id="reg-pass" placeholder="Password" />
+  <div class="strength-bar">
+    <div class="strength-seg" id="reg-seg-1"></div>
+    <div class="strength-seg" id="reg-seg-2"></div>
+    <div class="strength-seg" id="reg-seg-3"></div>
+    <div class="strength-seg" id="reg-seg-4"></div>
+  </div>
+  <span class="strength-label" id="reg-strength-label"></span>
+  <span id="err-reg-pass" class="field-error"></span>
+</div>
+
         <div class="field">
           <input type="password" id="reg-confirm" placeholder="Confirm Password" />
           <span id="err-reg-confirm" class="field-error"></span>
@@ -192,6 +204,7 @@
   <div class="toast" id="toast"></div>
   
   <!-- Correct path to JS -->
+  <script src="/public/components/defaultNavbar.js" defer></script>
   <script type="module" src="../public/js/auth.js"></script>
 </body>
 
