@@ -33,9 +33,9 @@
     mapInstance = L.map('map', {
       center: [18.10, -77.30],
       zoom: 9,
-      minZoom: 8,          // prevent over-zooming out (fewer tiles)
+      minZoom: 8,
       maxZoom: 16,
-      maxBounds: bounds,   // clamps panning to Jamaica only
+      maxBounds: bounds,
       maxBoundsViscosity: 0.85,
       zoomControl: false,
     });
@@ -44,9 +44,8 @@
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
       subdomains: 'abcd',
       maxZoom: 16,
-      // Cache tiles in the browser for 1 hour
       updateWhenIdle: true,
-      keepBuffer: 1,       // only render 1 tile-width buffer outside viewport
+      keepBuffer: 1,
     }).addTo(mapInstance);
 
     L.control.zoom({ position: 'bottomright' }).addTo(mapInstance);
@@ -110,6 +109,10 @@
         setStatus('ok', 'Location found');
         const coords = coordsEl();
         if (coords) coords.textContent = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+
+        // Hide the share-location button once we have a fix — re-centre takes over
+        const shareBtn = document.getElementById('share-location-btn');
+        if (shareBtn) shareBtn.style.display = 'none';
       },
       err => {
         const msgs = {
@@ -127,6 +130,7 @@
     document.getElementById('loc-overlay')?.remove();
   }
 
+  // ── Popup (now only shown on explicit user action) ─────────
   function buildPrompt() {
     removeOverlay();
     const overlay = document.createElement('div');
@@ -162,45 +166,86 @@
     });
   }
 
+  // ── Location init — silent, no popup on load ───────────────
+  // If permission is already granted: locate automatically.
+  // If denied or unknown: do nothing — wait for the user to click the button.
   function initLocation() {
     if (navigator.permissions) {
       navigator.permissions.query({ name: 'geolocation' }).then(result => {
         if (result.state === 'granted') {
           locateUser();
-        } else if (result.state === 'prompt') {
-          buildPrompt();
-        } else {
+        } else if (result.state === 'denied') {
           setStatus('error', 'Location blocked. Enable it in browser settings.');
         }
+        // 'prompt' state: stay quiet — the share button handles this
+
         result.onchange = () => {
           if (result.state === 'granted') locateUser();
           if (result.state === 'denied')  setStatus('error', 'Location blocked. Enable it in browser settings.');
         };
-      }).catch(() => buildPrompt());
-    } else {
-      buildPrompt();
+      }).catch(() => {
+        // Permissions API unavailable — stay quiet, button will trigger prompt
+      });
     }
+    // No permissions API: stay quiet, button will trigger the browser's native prompt
+  }
+
+  // ── Inject the "Share Location" map button ─────────────────
+  function injectShareButton() {
+    const mapWrap = document.querySelector('.map-wrap');
+    if (!mapWrap || document.getElementById('share-location-btn')) return;
+
+    const btn = document.createElement('button');
+    btn.id = 'share-location-btn';
+    btn.className = 'map-locate-btn'; // reuse the same style as Re-centre
+    btn.title = 'Share my location';
+    btn.innerHTML = `
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M8 1v2M8 13v2M1 8h2M13 8h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/>
+      </svg>
+      Share Location`;
+
+    // Position it just above the Re-centre button
+    const recentreBtn = document.getElementById('locate-btn');
+    if (recentreBtn) {
+      mapWrap.insertBefore(btn, recentreBtn);
+    } else {
+      mapWrap.appendChild(btn);
+    }
+
+    btn.addEventListener('click', e => {
+      e.preventDefault();
+      // Ensure map is loaded first, then show the prompt
+      if (!mapInstance) {
+        loadLeaflet(() => { initMap(); buildPrompt(); });
+      } else {
+        buildPrompt();
+      }
+    });
   }
 
   // ── Re-centre button ──────────────────────────────────────
   document.addEventListener('DOMContentLoaded', () => {
+    injectShareButton();
+
     const locateBtn = document.getElementById('locate-btn');
     if (locateBtn) {
       locateBtn.addEventListener('click', e => {
         e.preventDefault();
-        // If the map hasn't loaded yet (user clicked before scrolling),
-        // load Leaflet now and then locate.
         if (!mapInstance) {
           loadLeaflet(initMap);
-        } else {
+        } else if (userMarker) {
+          // Already have a fix — just re-centre
           locateUser();
+        } else {
+          // No fix yet — treat as share-location request
+          buildPrompt();
         }
       });
     }
 
     // ── IntersectionObserver — lazy init ──────────────────
-    // Leaflet JS is not fetched at all until the map section
-    // is within 200px of the viewport.
     const mapSection = document.getElementById('map-section');
     if (!mapSection) return;
 
@@ -211,7 +256,7 @@
           loadLeaflet(initMap);
         }
       },
-      { rootMargin: '0px 0px 200px 0px' } // start loading 200px before visible
+      { rootMargin: '0px 0px 200px 0px' }
     );
 
     observer.observe(mapSection);
