@@ -28,5 +28,5 @@ class DefaultFooter extends HTMLElement {
   }
 }
 
-customElements.define('default-Favbar', DefaultFooter);
+customElements.define('default-footerr', DefaultFooter);
 
