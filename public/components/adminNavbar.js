@@ -10,7 +10,9 @@ class AdminNavbar extends HTMLElement {
           <li><a href="#services">Services</a></li>
           <li><a href="#about">About Us</a></li>
           <li><a href="#contact">Contact</a></li>
-          <li><a href="/pages/dashboard.html">Dashboard</a></li>
+          <li><a href="/pages/admin.html">Admin Dashboard</a></li>
+          <li><a href="/pages/officer-review.html">Officer Review</a></li>
+          <li><a href="/pages/varification.html">Verification</a></li>
         </ul>
         <div class="nav-right">
           <button class="login" onclick="window.location.href='/pages/auth.html'">
