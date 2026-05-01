@@ -142,6 +142,9 @@
           </button>
         </form>
 
+
+
+
         <!-- ── RENEW FORM ── -->
         <form class="form-panel hidden" id="form-renew" novalidate>
           <div class="frow">
@@ -155,12 +158,12 @@
           <div class="frow pair">
             <div class="fgroup">
               <label class="flabel" for="r-trn">TRN</label>
-              <input class="finput" id="r-trn" type="text" placeholder="000-000-000" maxlength="11" />
+              <input class="finput" id="r-trn" type="text" placeholder="010101010" maxlength="9" />
               <span class="ferror" id="err-r-trn"></span>
             </div>
             <div class="fgroup">
-              <label class="flabel" for="r-licence">Licence Number</label>
-              <input class="finput" id="r-licence" type="text" placeholder="L000-00000" />
+              <label class="flabel" for="r-licence">Licence/Control Number</label>
+              <input class="finput" id="r-licence" type="text" placeholder="L000-00000" maxlength="10"/>
               <span class="ferror" id="err-r-licence"></span>
             </div>
           </div>
@@ -211,18 +214,44 @@
             </div>
           </div>
 
-          <div class="frow">
-            <div class="fgroup">
-              <label class="flabel">Upload Document</label>
-              <label class="file-drop" id="file-drop">
-                <input type="file" id="r-file" accept=".pdf,.jpg,.jpeg,.png" />
-                <span class="file-drop__text" id="file-label">
-                  Click to upload or drag &amp; drop — PDF, JPG, PNG
-                </span>
-              </label>
-              <span class="ferror" id="err-r-file"></span>
-            </div>
-          </div>
+<div class="frow">
+  <div class="fgroup">
+    <label class="flabel">Medical Certificate <span style="color:var(--error)">*</span></label>
+    <label class="file-drop" id="drop-medical">
+      <input type="file" id="r-file-medical" accept=".pdf,.jpg,.jpeg,.png,.docx" />
+      <span class="file-drop__text" id="label-medical">
+        Click to upload or drag &amp; drop — PDF, JPG, PNG, DOCX
+      </span>
+    </label>
+    <span class="ferror" id="err-r-medical"></span>
+  </div>
+</div>
+
+<div class="frow">
+  <div class="fgroup">
+    <label class="flabel">Photograph <span style="color:var(--error)">*</span></label>
+    <label class="file-drop" id="drop-photo">
+      <input type="file" id="r-file-photo" accept=".pdf,.jpg,.jpeg,.png,.docx" />
+      <span class="file-drop__text" id="label-photo">
+        Click to upload or drag &amp; drop — PDF, JPG, PNG, DOCX
+      </span>
+    </label>
+    <span class="ferror" id="err-r-photo"></span>
+  </div>
+</div>
+
+<div class="frow">
+  <div class="fgroup">
+    <label class="flabel">National ID <span style="color:var(--error)">*</span></label>
+    <label class="file-drop" id="drop-id">
+      <input type="file" id="r-file-id" accept=".pdf,.jpg,.jpeg,.png,.docx" />
+      <span class="file-drop__text" id="label-id">
+        Click to upload or drag &amp; drop — PDF, JPG, PNG, DOCX
+      </span>
+    </label>
+    <span class="ferror" id="err-r-id"></span>
+  </div>
+</div>
 
           <button class="btn-submit" type="submit" id="renew-btn">
             Submit Renewal

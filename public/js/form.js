@@ -1,6 +1,7 @@
-// form js file
+// form.js
 
 import { supabase } from "./dataconnect.js";
+
 // ── UUID generator ─────────────────────────────────────────
 
 function uuid() {
@@ -17,7 +18,6 @@ function uuid() {
 function setErr(id, msg) {
   const el = document.getElementById(id);
   if (el) el.textContent = msg;
-  // Highlight the associated input/select
   const field = el?.closest(".fgroup");
   const input = field?.querySelector(".finput, .fselect");
   if (input) input.style.borderColor = msg ? "var(--error)" : "";
@@ -27,19 +27,46 @@ function clearErrs(ids) {
   ids.forEach((id) => setErr(id, ""));
 }
 
-function validate(rules) {
-  let ok = true;
-  for (const [id, errId, msg] of rules) {
-    const el = document.getElementById(id);
-    const val = el?.value?.trim();
-    if (!val) {
-      setErr(errId, msg);
-      ok = false;
-    } else setErr(errId, "");
-  }
-  return ok;
+// ── Validation functions ───────────────────────────────────
+
+const COMMON_PROVIDERS = [
+  "gmail.com", "yahoo.com", "outlook.com", "hotmail.com", "icloud.com",
+  "live.com", "msn.com", "me.com", "aol.com", "protonmail.com",
+];
+
+function validateEmail(val) {
+  const basic = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(val);
+  if (!basic) return "Enter a valid email address.";
+  const domain = val.split("@")[1].toLowerCase();
+  if (!COMMON_PROVIDERS.includes(domain))
+    return "Please use a common provider (e.g. Gmail, Yahoo, Outlook).";
+  return "";
 }
 
+function validateTRN(val) {
+  const digits = val.replace(/\D/g, "");
+  if (digits.length !== 9) return "TRN must be exactly 9 digits.";
+  return "";
+}
+
+function validateDOB(val) {
+  if (!val) return "Date of birth is required.";
+  const today = new Date();
+  const dob = new Date(val);
+  if (dob > today) return "Date of birth cannot be in the future.";
+  let age = today.getFullYear() - dob.getFullYear();
+  const m = today.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+  if (age < 18) return "You must be at least 18 years old.";
+  if (age > 100) return "Please enter a valid date of birth.";
+  return "";
+}
+
+function validatePhone(val) {
+  const digits = val.replace(/\D/g, "");
+  if (digits.length !== 7) return "Enter exactly 7 digits after the area code.";
+  return "";
+}
 
 function validatePassword(pass, confirm) {
   if (pass.length < 8)
@@ -53,59 +80,131 @@ function validatePassword(pass, confirm) {
   return { passErr: "", confirmErr: "" };
 }
 
+function validateAmount(val) {
+  const n = parseFloat(val);
+  if (!val || isNaN(n)) return "Payment amount is required.";
+  if (n <= 0) return "Amount must be greater than 0.";
+  return "";
+}
+
+function validateRenewDates(issueVal, expiryVal) {
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const issue = new Date(issueVal);
+  const expiry = new Date(expiryVal);
+
+  if (!issueVal)  return { issueErr: "Issue date is required.", expiryErr: "" };
+  if (!expiryVal) return { issueErr: "", expiryErr: "Expiry date is required." };
+  if (issue > today)
+    return { issueErr: "Issue date cannot be in the future.", expiryErr: "" };
+  if (expiry <= today)
+    return { issueErr: "", expiryErr: "Expiry date must be a future date." };
+  if (expiry <= issue)
+    return { issueErr: "", expiryErr: "Expiry date must be after the issue date." };
+
+  return { issueErr: "", expiryErr: "" };
+}
+
+// ── File validation ────────────────────────────────────────
+
+const ALLOWED_TYPES = [
+  "image/png",
+  "image/jpeg",
+  "application/pdf",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+];
+const ALLOWED_EXT = /\.(png|jpe?g|pdf|docx)$/i;
+
+function validateFile(file, errId, dropId, labelId, inputId) {
+  if (!file) {
+    setErr(errId, "This document is required.");
+    return false;
+  }
+  if (!ALLOWED_TYPES.includes(file.type) || !ALLOWED_EXT.test(file.name)) {
+    setErr(errId, "Invalid format. Only PNG, JPG, PDF, DOCX allowed.");
+    document.getElementById(dropId).classList.remove("file-drop--has-file");
+    document.getElementById(labelId).textContent =
+      "Click to upload or drag & drop — PDF, JPG, PNG, DOCX";
+    document.getElementById(inputId).value = "";
+    return false;
+  }
+  setErr(errId, "");
+  return true;
+}
+
+// ── File upload to Supabase storage ───────────────────────
+
+async function uploadFile(file, folder, appId) {
+  const ext  = file.name.split(".").pop();
+  const path = `${appId}/${folder}_s2.${ext}`;
+
+  const { error } = await supabase.storage
+    .from("documents")
+    .upload(path, file, { upsert: true });
+
+  if (error) throw new Error(`Failed to upload ${folder}: ${error.message}`);
+  return path;
+}
+
+// ── Input formatters & keystroke guards ───────────────────
+
+// TRN auto-format: 000-000-000
+document.getElementById("a-trn").addEventListener("input", (e) => {
+  let v = e.target.value.replace(/\D/g, "").slice(0, 9);
+  if (v.length > 6)      v = `${v.slice(0, 3)}-${v.slice(3, 6)}-${v.slice(6)}`;
+  else if (v.length > 3) v = `${v.slice(0, 3)}-${v.slice(3)}`;
+  e.target.value = v;
+});
+
+document.getElementById("r-trn").addEventListener("input", (e) => {
+  let v = e.target.value.replace(/\D/g, "").slice(0, 9);
+  if (v.length > 6)      v = `${v.slice(0, 3)}-${v.slice(3, 6)}-${v.slice(6)}`;
+  else if (v.length > 3) v = `${v.slice(0, 3)}-${v.slice(3)}`;
+  e.target.value = v;
+});
+
+// Phone: strip non-digits, max 7
 document.getElementById("a-phone").addEventListener("input", (e) => {
   e.target.value = e.target.value.replace(/\D/g, "").slice(0, 7);
 });
 
-function validatePhone(val) {
-  const digits = val.replace(/\D/g, "");
-  if (digits.length !== 7) return "Enter exactly 7 digits after the area code.";
-  return "";
-}
-
-
-function validateDOB(val) {
-  if (!val) return "Date of birth is required.";
-  const today = new Date();
-  const dob   = new Date(val);
-  if (dob > today) return "Date of birth cannot be in the future.";
-  let age = today.getFullYear() - dob.getFullYear();
-  const m = today.getMonth() - dob.getMonth();
-  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
-  if (age < 18)  return "You must be at least 18 years old.";
-  if (age > 100) return "Please enter a valid date of birth.";
-  return "";
-}
-
-document.getElementById("a-trn").addEventListener("input", (e) => {
-  let v = e.target.value.replace(/\D/g, "").slice(0, 9);
-  if (v.length > 6)      v = `${v.slice(0,3)}-${v.slice(3,6)}-${v.slice(6)}`;
-  else if (v.length > 3) v = `${v.slice(0,3)}-${v.slice(3)}`;
-  e.target.value = v;
+// Keydown guards — digits only, no letters
+["a-phone", "a-trn", "r-trn"].forEach((id) => {
+  document.getElementById(id)?.addEventListener("keydown", (e) => {
+    const allowed = ["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight"];
+    if (!allowed.includes(e.key) && !/^\d$/.test(e.key)) e.preventDefault();
+  });
 });
 
-function validateTRN(val) {
-  const digits = val.replace(/\D/g, "");
-  if (digits.length !== 9) return "TRN must be exactly 9 digits.";
-  return "";
-}
+// Amount — digits and one decimal point only
+document.getElementById("r-amount")?.addEventListener("keydown", (e) => {
+  const allowed = ["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight", "."];
+  if (!allowed.includes(e.key) && !/^\d$/.test(e.key)) e.preventDefault();
+});
 
-const COMMON_PROVIDERS = [
-  "gmail.com","yahoo.com","outlook.com","hotmail.com","icloud.com",
-  "live.com","msn.com","me.com","aol.com","protonmail.com"
-];
+// ── File input change listeners ────────────────────────────
 
-function validateEmail(val) {
-  const basic = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(val);
-  if (!basic) return "Enter a valid email address.";
-  const domain = val.split("@")[1].toLowerCase();
-  if (!COMMON_PROVIDERS.includes(domain))
-    return "Please use a common provider (e.g. Gmail, Yahoo, Outlook).";
-  return "";
-}
-
-
-
+[
+  ["r-file-medical", "label-medical", "drop-medical", "err-r-medical"],
+  ["r-file-photo",   "label-photo",   "drop-photo",   "err-r-photo"],
+  ["r-file-id",      "label-id",      "drop-id",      "err-r-id"],
+].forEach(([inputId, labelId, dropId, errId]) => {
+  document.getElementById(inputId)?.addEventListener("change", (e) => {
+    const file  = e.target.files[0];
+    const drop  = document.getElementById(dropId);
+    const label = document.getElementById(labelId);
+    if (!file) return;
+    if (!ALLOWED_TYPES.includes(file.type) || !ALLOWED_EXT.test(file.name)) {
+      setErr(errId, "Invalid format. Only PNG, JPG, PDF, DOCX allowed.");
+      drop.classList.remove("file-drop--has-file");
+      label.textContent = "Click to upload or drag & drop — PDF, JPG, PNG, DOCX";
+      e.target.value = "";
+      return;
+    }
+    setErr(errId, "");
+    label.textContent = file.name;
+    drop.classList.add("file-drop--has-file");
+  });
+});
 
 // ── Toast ──────────────────────────────────────────────────
 
@@ -113,9 +212,7 @@ function showToast(msg, isError = false) {
   const t = document.getElementById("toast");
   t.textContent = msg;
   t.className = "toast toast--visible" + (isError ? " toast--error" : "");
-  setTimeout(() => {
-    t.className = "toast";
-  }, 3500);
+  setTimeout(() => { t.className = "toast"; }, 3500);
 }
 
 // ── Button loading state ───────────────────────────────────
@@ -132,7 +229,6 @@ function setBtnLoading(id, loading, label) {
 function showSuccess(title, appId, userId) {
   document.getElementById("form-apply").classList.add("hidden");
   document.getElementById("form-renew").classList.add("hidden");
-
   const panel = document.getElementById("success-panel");
   panel.classList.remove("hidden");
   document.getElementById("success-title").textContent = title;
@@ -144,9 +240,7 @@ function showSuccess(title, appId, userId) {
 
 document.getElementById("form-apply").addEventListener("submit", async (e) => {
   e.preventDefault();
-
-
- let ok = true;
+  let ok = true;
 
   // Name
   const name = document.getElementById("a-name").value.trim();
@@ -172,23 +266,23 @@ document.getElementById("form-apply").addEventListener("submit", async (e) => {
   const phoneErr = validatePhone(document.getElementById("a-phone").value);
   if (phoneErr) { setErr("err-a-phone", phoneErr); ok = false; }
   else setErr("err-a-phone", "");
-    
-  const fullPhone = document.getElementById("a-phone-code").value
-                + document.getElementById("a-phone").value;
 
   // Password
   const pass    = document.getElementById("a-pass").value;
   const confirm = document.getElementById("a-confirm").value;
   const { passErr, confirmErr } = validatePassword(pass, confirm);
   if (passErr)    { setErr("err-a-pass",    passErr);    ok = false; }
-  else             setErr("err-a-pass", "");
+  else              setErr("err-a-pass", "");
   if (confirmErr) { setErr("err-a-confirm", confirmErr); ok = false; }
-  else             setErr("err-a-confirm", "");
+  else              setErr("err-a-confirm", "");
 
   if (!ok) return;
 
+  // Build full phone number only after validation passes
+  const fullPhone = document.getElementById("a-phone-code").value
+                  + document.getElementById("a-phone").value;
 
-  const appId = uuid();
+  const appId  = uuid();
   const userId = uuid();
   setBtnLoading("apply-btn", true, "Submit Application");
 
@@ -202,6 +296,7 @@ document.getElementById("form-apply").addEventListener("submit", async (e) => {
     role: "citizen",
     status: "active",
   });
+
   if (userErr) {
     setBtnLoading("apply-btn", false, "Submit Application");
     showToast("Failed to save user details. Please try again.", true);
@@ -212,8 +307,15 @@ document.getElementById("form-apply").addEventListener("submit", async (e) => {
   const { error: appErr } = await supabase.from("applications").insert({
     id: appId, user_id: userId, type: "application", status: "pending",
   });
+
   setBtnLoading("apply-btn", false, "Submit Application");
-  if (appErr) { showToast("Failed to create application. Please try again.", true); console.error("applications insert:", appErr.message); return; }
+
+  if (appErr) {
+    showToast("Failed to create application. Please try again.", true);
+    console.error("applications insert:", appErr.message);
+    return;
+  }
+
   showToast("Application submitted successfully!");
   showSuccess("Application Submitted", appId, userId);
 });
@@ -222,20 +324,62 @@ document.getElementById("form-apply").addEventListener("submit", async (e) => {
 
 document.getElementById("form-renew").addEventListener("submit", async (e) => {
   e.preventDefault();
+  let ok = true;
 
-  const ok = validate([
-    ["r-name", "err-r-name", "Full name is required."],
-    ["r-trn", "err-r-trn", "TRN is required."],
-    ["r-licence", "err-r-licence", "Licence number is required."],
-    ["r-issue", "err-r-issue", "Issue date is required."],
-    ["r-expiry", "err-r-expiry", "Expiry date is required."],
-    ["r-status", "err-r-status", "Status is required."],
-    ["r-payment", "err-r-payment", "Payment method is required."],
-    ["r-amount", "err-r-amount", "Payment amount is required."],
-  ]);
+  // Name
+  const rName = document.getElementById("r-name").value.trim();
+  if (!rName) { setErr("err-r-name", "Full name is required."); ok = false; }
+  else setErr("err-r-name", "");
+
+  // TRN
+  const rTrnErr = validateTRN(document.getElementById("r-trn").value.trim());
+  if (rTrnErr) { setErr("err-r-trn", rTrnErr); ok = false; }
+  else setErr("err-r-trn", "");
+
+  // Licence
+  const rLic = document.getElementById("r-licence").value.trim();
+  if (!rLic) { setErr("err-r-licence", "Licence number is required."); ok = false; }
+  else setErr("err-r-licence", "");
+
+  // Dates
+  const { issueErr, expiryErr } = validateRenewDates(
+    document.getElementById("r-issue").value,
+    document.getElementById("r-expiry").value
+  );
+  if (issueErr)  { setErr("err-r-issue",  issueErr);  ok = false; }
+  else setErr("err-r-issue", "");
+  if (expiryErr) { setErr("err-r-expiry", expiryErr); ok = false; }
+  else setErr("err-r-expiry", "");
+
+  // Status
+  const rStatus = document.getElementById("r-status").value;
+  if (!rStatus) { setErr("err-r-status", "Please select a status."); ok = false; }
+  else setErr("err-r-status", "");
+
+  // Payment method
+  const rPayment = document.getElementById("r-payment").value;
+  if (!rPayment) { setErr("err-r-payment", "Please select a payment method."); ok = false; }
+  else setErr("err-r-payment", "");
+
+  // Amount
+  const amountErr = validateAmount(document.getElementById("r-amount").value);
+  if (amountErr) { setErr("err-r-amount", amountErr); ok = false; }
+  else setErr("err-r-amount", "");
+
+  // Files — read before validation so they're available for upload too
+  const medicalFile = document.getElementById("r-file-medical").files[0];
+  const photoFile   = document.getElementById("r-file-photo").files[0];
+  const idFile      = document.getElementById("r-file-id").files[0];
+
+  const medOk   = validateFile(medicalFile, "err-r-medical", "drop-medical", "label-medical", "r-file-medical");
+  const photoOk = validateFile(photoFile,   "err-r-photo",   "drop-photo",   "label-photo",   "r-file-photo");
+  const idOk    = validateFile(idFile,      "err-r-id",      "drop-id",      "label-id",      "r-file-id");
+
+  if (!medOk || !photoOk || !idOk) ok = false;
+
   if (!ok) return;
 
-  const appId = uuid();
+  const appId  = uuid();
   const userId = uuid();
   const licNum = document.getElementById("r-licence").value.trim();
 
@@ -268,7 +412,7 @@ document.getElementById("form-renew").addEventListener("submit", async (e) => {
   });
 
   if (licErr) {
-    console.warn("licenses insert:", licErr.message); // non-fatal, app already created
+    console.warn("licenses insert:", licErr.message); // non-fatal
   }
 
   // Insert into payments table
@@ -279,27 +423,23 @@ document.getElementById("form-renew").addEventListener("submit", async (e) => {
     status: "pending",
   });
 
-  setBtnLoading("renew-btn", false, "Submit Renewal");
-
   if (payErr) {
     console.warn("payments insert:", payErr.message); // non-fatal
   }
 
+  // Upload all three files to Supabase storage
+  try {
+    await uploadFile(medicalFile, "medical_cert", appId);
+    await uploadFile(photoFile,   "photograph",   appId);
+    await uploadFile(idFile,      "national_id",  appId);
+  } catch (uploadErr) {
+    setBtnLoading("renew-btn", false, "Submit Renewal");
+    showToast(uploadErr.message, true);
+    console.error(uploadErr);
+    return;
+  }
+
+  setBtnLoading("renew-btn", false, "Submit Renewal");
   showToast("Renewal submitted successfully!");
   showSuccess("Renewal Submitted", appId, userId);
-});
-
-// ── File input label update ────────────────────────────────
-
-document.getElementById("r-file")?.addEventListener("change", (e) => {
-  const file = e.target.files[0];
-  const label = document.getElementById("file-label");
-  const drop = document.getElementById("file-drop");
-  if (file) {
-    label.textContent = file.name;
-    drop.classList.add("file-drop--has-file");
-  } else {
-    label.textContent = "Click to upload or drag & drop — PDF, JPG, PNG";
-    drop.classList.remove("file-drop--has-file");
-  }
 });
