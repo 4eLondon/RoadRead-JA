@@ -46,9 +46,10 @@ class CommitsLoader {
 
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-      const commits = await response.json();
+      const allCommits = await response.json();
+      const commits = allCommits.slice(0, COMMITS_CONFIG.maxCommits);
       this.cacheCommits(commits);
-      this.renderCommits(commits.slice(0, COMMITS_CONFIG.maxCommits));
+      this.renderCommits(commits);
       this.setStatus('ok', 'Updated just now');
     } catch (err) {
       console.error('Failed to fetch commits:', err);
@@ -99,8 +100,8 @@ class CommitsLoader {
       return;
     }
 
-    this.listEl.innerHTML = commits.map(commit => {
-      const { sha, commit, author, html_url } = commit;
+    this.listEl.innerHTML = commits.map(item => {
+      const { sha, commit, author, html_url } = item;
       const shortSha = sha.slice(0, 7);
       const date = new Date(commit.author.date);
       const authorName = commit.author.name;

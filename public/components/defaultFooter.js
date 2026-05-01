@@ -21,8 +21,7 @@ class DefaultFooter extends HTMLElement {
         &copy; 2026 RoadReady JA. All rights reserved.
       </div>
     </div>
-  </footer>`
-    ;
+  </footer>`;
 
     window.rrjaTheme.init();
   }
