@@ -28,5 +28,5 @@ class DefaultFooter extends HTMLElement {
   }
 }
 
-customElements.define('default-footerr', DefaultFooter);
+customElements.define('default-footer', DefaultFooter);
 
