@@ -1382,3 +1382,57 @@ COMMITS SECTION
     margin-left: 0;
   }
 }
+
+/* ── Navbar auth state (signed-in) ───────────────────────── */
+.nav-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-right: 12px;
+}
+
+.nav-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 2px;
+  background: var(--accent);
+  color: #1a1a1a;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.nav-profile__name {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text);
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nav-signout {
+  padding: 7px 16px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-subtle);
+  cursor: pointer;
+  transition: border-color var(--tr), color var(--tr);
+}
+
+.nav-signout:hover {
+  border-color: var(--error);
+  color: var(--error);
+}
