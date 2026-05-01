@@ -25,22 +25,20 @@ body {
 /* ── Card ────────────────────────────────────────────────── */
 .card {
   width: 780px;
-  min-height: 650px; 
   border-radius: 2px;
   border: 1px solid var(--border);
   background: var(--bg);
   position: relative;
   overflow: hidden;
-  /* Firefox-compatible clipping: hidden clips the sliding panel correctly */
-  /* The ::after spacer below ensures height is not collapsed */
+  /* Height is driven by panel-right content via the ::after spacer trick */
 }
 
-/* Spacer so the relatively-positioned card has height */
+/* Spacer: mirrors panel-right height so the card grows with form content */
 .card::after {
   content: "";
   display: block;
-  /* Match the new min-height */
-  min-height: 650px;
+  margin-left: var(--panel-w); /* offset for the green panel */
+  /* No fixed min-height — let the form content set the height */
 }
 
 
@@ -72,9 +70,9 @@ GREEN PANEL
 .panel-left {
   position: absolute;
   top: 0;
-  bottom: 0;
   left: 0;
   width: var(--panel-w);
+  min-height: 100%; /* stretch to match whatever height the card becomes */
   background: var(--green);
   color: #fff;
   display: flex;
@@ -159,23 +157,23 @@ GREEN PANEL
 FORM PANEL
 ════════════════════════════════════════════════════════════ */
 .panel-right {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: var(--panel-w);
+  /* Relative so card height grows with form content */
+  position: relative;
+  margin-left: var(--panel-w);
   width: calc(100% - var(--panel-w));
+  min-height: 560px; /* floor so login form (shorter) isn't cramped */
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 40px 50px;
   background: var(--bg);
   z-index: 1;
-  transition: left var(--slide-dur) var(--slide-ease);
+  transition: margin-left var(--slide-dur) var(--slide-ease);
 }
 
-/* Login: form shifts to the left */
+/* Login: panel-left slides right, form needs no left offset */
 .card.is-login .panel-right {
-  left: 0;
+  margin-left: 0;
 }
 
 /* ── Form Wrappers ──────────────────────────────────────── */
