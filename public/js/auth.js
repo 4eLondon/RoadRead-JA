@@ -265,22 +265,34 @@ document.getElementById("form-register")?.addEventListener("submit", async (e) =
       return;
     }
 
-    // If Admin, show generated ID and lock form
     if (role === "admin" && adminId) {
-      const idDisplay = document.getElementById("admin-id-display");
-      const idInput   = document.getElementById("generated-admin-id");
-      idInput.value         = adminId;
-      idDisplay.style.display = "block";
+  const idDisplay = document.getElementById("admin-id-display");
+  const idInput   = document.getElementById("generated-admin-id");
+  idInput.value           = adminId;
+  idDisplay.style.display = "block";
 
-      setBtnLoading("signup-btn", false, "Sign Up");
-      showToast("Account created! Save your Admin ID.", false);
+  // Lock all form fields so user can't accidentally edit after submit
+  document.querySelectorAll("#form-register input, #form-register select").forEach(el => {
+    el.disabled = true;
+  });
 
-      const signupBtn = document.getElementById("signup-btn");
-      signupBtn.disabled    = true;
-      signupBtn.textContent = "Saved? Go to Login";
-      signupBtn.onclick     = showLogin;
-      return;
-    }
+  setBtnLoading("signup-btn", false, "Sign Up");
+  showToast("Account created! Save your Admin ID.", false);
+
+  const signupBtn       = document.getElementById("signup-btn");
+  signupBtn.disabled    = false; // re-enable so user can click to go to login
+  signupBtn.textContent = "Saved? Go to Login";
+  signupBtn.onclick     = (e) => {
+    e.preventDefault();
+    // Re-enable fields before switching so register form is clean if revisited
+    document.querySelectorAll("#form-register input, #form-register select").forEach(el => {
+      el.disabled = false;
+    });
+    showLogin();
+  };
+  return;
+}
+
   } else {
     setBtnLoading("signup-btn", false, "Sign Up");
     showToast("User creation failed.", true);
