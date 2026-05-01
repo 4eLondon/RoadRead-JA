@@ -1,4 +1,4 @@
-// Dashbaord js file
+// dashboard.js — Road Ready JA Citizen Profile
 
 import { supabase } from "./dataconnect.js";
 
@@ -29,7 +29,7 @@ function fmtDate(dateStr) {
 }
 
 function initials(name) {
-  if (!name) return "–";
+  if (!name) return "?";
   return name
     .trim()
     .split(/\s+/)
@@ -48,32 +48,48 @@ function showToast(msg, isError = false) {
   }, 3500);
 }
 
+function setHint(id, msg, isError = false) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = isError ? "var(--error)" : "var(--success)";
+}
+
 // ── Populate UI ────────────────────────────────────────────
 
-const name = user.user_metadata?.name || user.email.split("@")[0];
+const name  = user.user_metadata?.name || user.email.split("@")[0];
 const email = user.email;
-const init = initials(name);
+const init  = initials(name);
 
-["sidebar-avatar", "topbar-avatar", "account-avatar"].forEach((id) => {
+// Avatars
+["sidebar-avatar", "topbar-avatar", "hero-avatar"].forEach((id) => {
   const el = document.getElementById(id);
   if (el) el.textContent = init;
 });
 
-document.getElementById("sidebar-name").textContent = name;
+// Names / emails in topbar + sidebar
+document.getElementById("sidebar-name").textContent  = name;
 document.getElementById("sidebar-email").textContent = email;
-document.getElementById("topbar-name").textContent = name;
-document.getElementById("account-name").textContent = name;
-document.getElementById("account-email").textContent = email;
-document.getElementById("account-since").textContent =
-  "Since " + fmtDate(user.created_at);
+document.getElementById("topbar-name").textContent   = name;
 
-document.getElementById("stat-joined").textContent = fmtDate(user.created_at);
-document.getElementById("stat-last-login").textContent = fmt(
-  user.last_sign_in_at,
-);
-document.getElementById("stat-status").textContent = user.confirmed_at
-  ? "Confirmed"
-  : "Pending";
+// Hero block
+document.getElementById("hero-name").textContent  = name;
+document.getElementById("hero-email").textContent = email;
+document.getElementById("hero-since").textContent = fmtDate(user.created_at);
+
+const statusBadge = document.getElementById("hero-status-badge");
+if (!user.confirmed_at) {
+  statusBadge.textContent = "Unconfirmed";
+  statusBadge.style.background = "rgba(224,85,85,0.15)";
+  statusBadge.style.color      = "var(--error)";
+  statusBadge.style.borderColor= "rgba(224,85,85,0.3)";
+  statusBadge.classList.remove("badge");
+}
+
+// Stat cards
+document.getElementById("stat-joined").textContent    = fmtDate(user.created_at);
+document.getElementById("stat-last-login").textContent= fmt(user.last_sign_in_at);
+document.getElementById("stat-status").textContent    = user.confirmed_at ? "Confirmed" : "Pending";
 
 supabase
   .from("applications")
@@ -83,30 +99,37 @@ supabase
     document.getElementById("stat-apps").textContent = count ?? "0";
   });
 
-// ── Activity log (persistent) ──────────────────────────────
+// Account info panel
+document.getElementById("info-name").textContent     = name;
+document.getElementById("info-email").textContent    = email;
+document.getElementById("info-uid").textContent      = user.id;
+document.getElementById("info-verified").textContent = user.confirmed_at ? "Yes ✓" : "No — check your inbox";
+document.getElementById("info-created").textContent  = fmt(user.created_at);
+document.getElementById("info-last").textContent     = fmt(user.last_sign_in_at);
+
+// Pre-fill email field
+const currentEmailDisplay = document.getElementById("current-email-display");
+if (currentEmailDisplay) currentEmailDisplay.value = email;
+
+// ── Activity log ───────────────────────────────────────────
 
 const ICON_MAP = {
-  "Signed In": "↗",
-  "Signed Out": "↙",
-  "Account Created": "★",
-  "Email Confirmed": "✓",
-  "Password Changed": "⟳",
-  "Profile Updated": "✎",
+  "Signed In":             "↗",
+  "Signed Out":            "↙",
+  "Account Created":       "★",
+  "Email Confirmed":       "✓",
+  "Password Changed":      "⟳",
+  "Profile Updated":       "✎",
+  "Email Changed":         "✉",
   "Application Submitted": "📄",
-  "Renewal Submitted": "🔄",
+  "Renewal Submitted":     "🔄",
 };
 
 const activityList = document.getElementById("activity-list");
-const notifList = document.getElementById("notif-list");
-let unread = 0;
 
-// Render a single entry into both the activity list and notification list
-function renderEntry(entry, isNew = false) {
+function renderEntry(entry) {
   activityList.querySelector(".activity-list__empty")?.remove();
-  notifList.querySelector(".notif-list__empty")?.remove();
-
   const icon = ICON_MAP[entry.label] ?? "·";
-
   const li = document.createElement("li");
   li.innerHTML = `
     <div class="activity-icon">${icon}</div>
@@ -116,31 +139,17 @@ function renderEntry(entry, isNew = false) {
     </div>
   `;
   activityList.prepend(li);
-
-  const ni = document.createElement("li");
-  if (isNew) ni.classList.add("notif-item--new");
-  ni.innerHTML = `${entry.label}<span class="notif-item__time">${fmt(entry.created_at)}</span>`;
-  notifList.prepend(ni);
-
-  if (isNew) {
-    unread++;
-    updateBadges();
-    showToast(entry.label);
-  }
 }
 
-// Write a new event to Supabase then render it
 async function logEvent(label) {
   const { data, error } = await supabase
     .from("activity_log")
     .insert({ user_id: user.id, label, icon: ICON_MAP[label] ?? "·" })
     .select()
     .single();
-
-  if (!error && data) renderEntry(data, true);
+  if (!error && data) renderEntry(data);
 }
 
-// Load all past entries from Supabase on page load
 async function loadLog() {
   const { data, error } = await supabase
     .from("activity_log")
@@ -150,32 +159,13 @@ async function loadLog() {
     .limit(50);
 
   if (error || !data?.length) return;
-
   activityList.innerHTML = "";
-  notifList.innerHTML = "";
-
-  // Render oldest first so prepend builds the list correctly
-  [...data].reverse().forEach((entry) => renderEntry(entry, false));
+  [...data].reverse().forEach(renderEntry);
 }
 
-function updateBadges() {
-  ["bell-badge", "sidebar-badge"].forEach((id) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.textContent = unread;
-    el.dataset.count = unread;
-    el.style.display = unread > 0 ? "" : "none";
-  });
-}
-
-// Load existing history first
 await loadLog();
 
 // ── Log sign-in once per browser session ──────────────────
-// sessionStorage is cleared when the tab/browser closes.
-// This prevents tab switches and token refreshes from
-// adding duplicate "Signed In" entries.
-
 const SESSION_KEY = `signed_in_logged_${user.id}`;
 if (!sessionStorage.getItem(SESSION_KEY)) {
   sessionStorage.setItem(SESSION_KEY, "1");
@@ -183,9 +173,6 @@ if (!sessionStorage.getItem(SESSION_KEY)) {
 }
 
 // ── Seed one-time account events ──────────────────────────
-// Only insert "Account Created" / "Email Confirmed" if they
-// don't already exist in the log for this user.
-
 const { count: createdCount } = await supabase
   .from("activity_log")
   .select("id", { count: "exact", head: true })
@@ -194,10 +181,7 @@ const { count: createdCount } = await supabase
 
 if (createdCount === 0 && user.created_at) {
   await supabase.from("activity_log").insert({
-    user_id: user.id,
-    label: "Account Created",
-    icon: "★",
-    created_at: user.created_at,
+    user_id: user.id, label: "Account Created", icon: "★", created_at: user.created_at,
   });
 }
 
@@ -209,84 +193,132 @@ const { count: confirmedCount } = await supabase
 
 if (confirmedCount === 0 && user.email_confirmed_at) {
   await supabase.from("activity_log").insert({
-    user_id: user.id,
-    label: "Email Confirmed",
-    icon: "✓",
-    created_at: user.email_confirmed_at,
+    user_id: user.id, label: "Email Confirmed", icon: "✓", created_at: user.email_confirmed_at,
   });
 }
 
-// Reload after seeding so new entries appear
 await loadLog();
 
-// ── Live auth state listener ───────────────────────────────
-// TOKEN_REFRESHED  → fires on every tab switch, skip it
-// SIGNED_IN        → fires on page load, skip it (handled above)
-// INITIAL_SESSION  → fires on page load, skip it
+// ── Clear log button ───────────────────────────────────────
+document.getElementById("clear-log")?.addEventListener("click", () => {
+  activityList.innerHTML = '<li class="activity-list__empty">No recent activity</li>';
+});
 
-const IGNORED_EVENTS = new Set([
-  "INITIAL_SESSION",
-  "TOKEN_REFRESHED",
-  "SIGNED_IN",
-]);
-
-const EVENT_LABEL_MAP = {
-  SIGNED_OUT: "Signed Out",
-  PASSWORD_RECOVERY: "Password Changed",
-  USER_UPDATED: "Profile Updated",
-};
+// ── Auth state listener ────────────────────────────────────
+const IGNORED = new Set(["INITIAL_SESSION", "TOKEN_REFRESHED", "SIGNED_IN"]);
+const EVENT_LABEL = { SIGNED_OUT: "Signed Out", USER_UPDATED: "Profile Updated" };
 
 supabase.auth.onAuthStateChange(async (event) => {
-  if (IGNORED_EVENTS.has(event)) return;
-  const label = EVENT_LABEL_MAP[event];
+  if (IGNORED.has(event)) return;
+  const label = EVENT_LABEL[event];
   if (label) await logEvent(label);
 });
 
-// ── Notification drawer ────────────────────────────────────
+// ── Update Email ───────────────────────────────────────────
+document.getElementById("update-email-btn")?.addEventListener("click", async () => {
+  const newEmail = document.getElementById("new-email").value.trim();
+  if (!newEmail) return setHint("email-hint", "Please enter a new email address.", true);
+  if (newEmail === email) return setHint("email-hint", "That's already your current email.", true);
 
-const drawer = document.getElementById("notif-drawer");
-const overlay = document.getElementById("notif-overlay");
-const bellBtn = document.getElementById("bell-btn");
-const notifTrigger = document.getElementById("notif-trigger");
-const notifClose = document.getElementById("notif-close");
+  const btn = document.getElementById("update-email-btn");
+  btn.disabled = true;
+  btn.textContent = "Updating…";
 
-function openDrawer() {
-  drawer.classList.add("open");
-  overlay.classList.add("open");
-  unread = 0;
-  updateBadges();
-  notifList
-    .querySelectorAll(".notif-item--new")
-    .forEach((el) => el.classList.remove("notif-item--new"));
-}
+  const { error } = await supabase.auth.updateUser({ email: newEmail });
 
-function closeDrawer() {
-  drawer.classList.remove("open");
-  overlay.classList.remove("open");
-}
+  btn.disabled = false;
+  btn.textContent = "Update Email";
 
-bellBtn?.addEventListener("click", openDrawer);
-notifTrigger?.addEventListener("click", (e) => {
-  e.preventDefault();
-  openDrawer();
+  if (error) {
+    setHint("email-hint", error.message, true);
+    showToast("Failed to update email.", true);
+  } else {
+    setHint("email-hint", "Confirmation sent to " + newEmail + ". Check your inbox.");
+    showToast("Confirmation email sent!");
+    await logEvent("Email Changed");
+    document.getElementById("new-email").value = "";
+  }
 });
-notifClose?.addEventListener("click", closeDrawer);
-overlay?.addEventListener("click", closeDrawer);
 
-// Clear only clears the UI — comment in the delete line to also wipe from Supabase
-document.getElementById("clear-log")?.addEventListener("click", async () => {
-  // await supabase.from("activity_log").delete().eq("user_id", user.id);
-  activityList.innerHTML =
-    '<li class="activity-list__empty">No recent activity</li>';
-  notifList.innerHTML = '<li class="notif-list__empty">No notifications</li>';
-  unread = 0;
-  updateBadges();
+// ── Password strength ──────────────────────────────────────
+function checkStrength(pw) {
+  let score = 0;
+  if (pw.length >= 8)  score++;
+  if (pw.length >= 12) score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  return score;
+}
+
+document.getElementById("new-password")?.addEventListener("input", (e) => {
+  const pw    = e.target.value;
+  const fill  = document.getElementById("pw-strength-fill");
+  const label = document.getElementById("pw-strength-label");
+  if (!pw) { fill.style.width = "0"; fill.style.background = ""; label.textContent = ""; return; }
+
+  const score = checkStrength(pw);
+  const levels = [
+    { pct: "20%", color: "var(--error)",   text: "Weak" },
+    { pct: "40%", color: "var(--error)",   text: "Fair" },
+    { pct: "60%", color: "var(--accent)",  text: "Moderate" },
+    { pct: "80%", color: "var(--success)", text: "Strong" },
+    { pct: "100%",color: "var(--success)", text: "Very Strong" },
+  ];
+  const lvl = levels[Math.min(score - 1, 4)] ?? levels[0];
+  fill.style.width      = lvl.pct;
+  fill.style.background = lvl.color;
+  label.textContent     = lvl.text;
+  label.style.color     = lvl.color;
+});
+
+// ── Toggle password visibility ─────────────────────────────
+["pw-toggle-1", "pw-toggle-2"].forEach((id, i) => {
+  const btn   = document.getElementById(id);
+  const input = document.getElementById(i === 0 ? "new-password" : "confirm-password");
+  btn?.addEventListener("click", () => {
+    input.type = input.type === "password" ? "text" : "password";
+  });
+});
+
+// ── Update Password ────────────────────────────────────────
+document.getElementById("update-password-btn")?.addEventListener("click", async () => {
+  const pw1 = document.getElementById("new-password").value;
+  const pw2 = document.getElementById("confirm-password").value;
+
+  if (!pw1)          return setHint("password-hint", "Please enter a new password.", true);
+  if (pw1.length < 8)return setHint("password-hint", "Password must be at least 8 characters.", true);
+  if (pw1 !== pw2)   return setHint("password-hint", "Passwords do not match.", true);
+
+  const btn = document.getElementById("update-password-btn");
+  btn.disabled = true;
+  btn.textContent = "Updating…";
+
+  const { error } = await supabase.auth.updateUser({ password: pw1 });
+
+  btn.disabled = false;
+  btn.textContent = "Update Password";
+
+  if (error) {
+    setHint("password-hint", error.message, true);
+    showToast("Failed to update password.", true);
+  } else {
+    setHint("password-hint", "Password updated successfully.");
+    showToast("Password updated!");
+    await logEvent("Password Changed");
+    document.getElementById("new-password").value     = "";
+    document.getElementById("confirm-password").value = "";
+    document.getElementById("pw-strength-fill").style.width = "0";
+    document.getElementById("pw-strength-label").textContent = "";
+  }
 });
 
 // ── Sign out ───────────────────────────────────────────────
-
-document.getElementById("signout-btn")?.addEventListener("click", async () => {
+async function doSignOut() {
   await logEvent("Signed Out");
   await supabase.auth.signOut();
   window.location.href = "/pages/auth.html?mode=login";
-});
+}
+
+document.getElementById("signout-btn")?.addEventListener("click", doSignOut);
+document.getElementById("signout-btn-2")?.addEventListener("click", doSignOut);
