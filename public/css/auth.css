@@ -726,3 +726,18 @@ RESPONSIVE
   min-height: 1em;
   transition: color 0.3s ease;
 }
+
+/* Force navbar to break out of the auth page flex centering */
+default-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  display: block; /* Override any flex behavior */
+}
+
+/* Ensure the auth card doesn't hide behind the fixed navbar */
+.card {
+  margin-top: 80px; /* Pushes the card down below the fixed navbar */
+}
