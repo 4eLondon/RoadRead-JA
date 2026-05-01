@@ -187,6 +187,7 @@
 
     if (offices.length === 0) {
       list.innerHTML = '<p class="taj-sidebar__empty">No offices match your search.</p>';
+        officeMarkers.forEach(e => e.card = null);
       return;
     }
 
@@ -226,9 +227,10 @@
         if (e.target.tagName === 'A') return;
         activateOffice(office._origIndex);
       });
-
-      if (officeMarkers[office._origIndex]) officeMarkers[office._origIndex].card = card;
-      list.appendChild(card);
+if (officeMarkers[office._origIndex]) {
+  officeMarkers[office._origIndex].card = card;
+}
+list.appendChild(card);
     });
   }
 
