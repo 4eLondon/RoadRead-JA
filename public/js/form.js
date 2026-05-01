@@ -19,6 +19,14 @@ function setErr(id, msg) {
   const el = document.getElementById(id);
   if (el) el.textContent = msg;
   const field = el?.closest(".fgroup");
+
+  // For phone, highlight only the number input not the select
+  if (id === "err-a-phone") {
+    const phoneInput = document.getElementById("a-phone");
+    if (phoneInput) phoneInput.style.borderColor = msg ? "var(--error)" : "";
+    return;
+  }
+
   const input = field?.querySelector(".finput, .fselect");
   if (input) input.style.borderColor = msg ? "var(--error)" : "";
 }
