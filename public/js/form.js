@@ -84,12 +84,12 @@ function validateAmount(val) {
   const n = parseFloat(val);
   if (!val || isNaN(n)) return "Payment amount is required.";
   if (n <= 0) return "Amount must be greater than 0.";
+  if (n > 1_000_000)    return "Amount cannot exceed $1,000,000 JMD.";
   return "";
 }
-
 function validateRenewDates(issueVal, expiryVal) {
-  const today = new Date(); today.setHours(0, 0, 0, 0);
-  const issue = new Date(issueVal);
+  const today  = new Date(); today.setHours(0, 0, 0, 0);
+  const issue  = new Date(issueVal);
   const expiry = new Date(expiryVal);
 
   if (!issueVal)  return { issueErr: "Issue date is required.", expiryErr: "" };
@@ -98,6 +98,8 @@ function validateRenewDates(issueVal, expiryVal) {
     return { issueErr: "Issue date cannot be in the future.", expiryErr: "" };
   if (expiry <= today)
     return { issueErr: "", expiryErr: "Expiry date must be a future date." };
+  if (expiry.getTime() === issue.getTime())
+    return { issueErr: "", expiryErr: "Expiry date cannot be the same as the issue date." };
   if (expiry <= issue)
     return { issueErr: "", expiryErr: "Expiry date must be after the issue date." };
 
@@ -173,6 +175,11 @@ document.getElementById("a-phone").addEventListener("input", (e) => {
     const allowed = ["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight"];
     if (!allowed.includes(e.key) && !/^\d$/.test(e.key)) e.preventDefault();
   });
+});
+
+document.getElementById("r-licence")?.addEventListener("keydown", (e) => {
+  const allowed = ["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight", "-"];
+  if (!allowed.includes(e.key) && !/^[a-zA-Z0-9]$/.test(e.key)) e.preventDefault();
 });
 
 // Amount — digits and one decimal point only
