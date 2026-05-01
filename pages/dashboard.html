@@ -5,196 +5,190 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Road Ready JA – Dashboard</title>
-    <link rel="icon" type="image/png" href="/public/images/favicon-32x32.png">
-   <link rel="stylesheet" href="/public/css/variables.css" />
- <link rel="stylesheet" href="/public/css/user.css" />
+  <link rel="icon" type="image/png" href="/public/images/favicon-32x32.png">
+  <link rel="stylesheet" href="/public/css/variables.css" />
+  <link rel="stylesheet" href="/public/css/user.css" />
 </head>
 
 <body>
-  <!-- ── Sidebar ── -->
-  <aside class="sidebar">
-    <img src="/public/images/logo.png" style="width: 160px; height: auto" />
+  <!-- ── Layout wrapper ── -->
+  <div class="layout">
+    <!-- ── Sidebar ── -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">Road Ready <span>JA</span></div>
+      <div class="sidebar-role">Citizen Portal</div>
 
-    <nav class="sidebar__nav">
-      <span class="sidebar__section-label">Main</span>
-      <a class="nav-item active" href="/pages/user.html" data-page="overview">
-        <span class="nav-item__icon">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <nav class="sidebar-nav">
+        <span class="nav-section">Main</span>
+        <a class="active" href="/pages/user.html" data-page="overview">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0">
             <rect x="1" y="1" width="6" height="6" rx="1" fill="currentColor" />
             <rect x="9" y="1" width="6" height="6" rx="1" fill="currentColor" opacity=".5" />
             <rect x="1" y="9" width="6" height="6" rx="1" fill="currentColor" opacity=".5" />
             <rect x="9" y="9" width="6" height="6" rx="1" fill="currentColor" />
           </svg>
-        </span>
-        Overview
-      </a>
-      <a class="nav-item" href="/pages/application.html">
-        <span class="nav-item__icon">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          Overview
+        </a>
+        <a href="/pages/application.html">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0">
             <path d="M2 3h12M2 8h8M2 13h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" />
           </svg>
-        </span>
-        Applications
-      </a>
-      <a class="nav-item" href="/pages/application.html?type=renew">
-        <span class="nav-item__icon">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          Applications
+        </a>
+        <a href="/pages/application.html?type=renew">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0">
             <path d="M13 8A5 5 0 1 1 8 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" />
             <path d="M8 1v4h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" />
           </svg>
-        </span>
-        Renewals
-      </a>
+          Renewals
+        </a>
 
-      <span class="sidebar__section-label">Account</span>
-      <a class="nav-item" href="#" id="notif-trigger">
-        <span class="nav-item__icon">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <span class="nav-section">Account</span>
+        <a href="#" id="notif-trigger">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0">
             <path d="M8 1a5 5 0 0 1 5 5v3l1 2H2l1-2V6a5 5 0 0 1 5-5z" stroke="currentColor" stroke-width="1.5" />
             <path d="M6 13a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.5" />
           </svg>
-        </span>
-        Notifications
-        <span class="nav-item__badge" id="sidebar-badge">0</span>
-      </a>
-      <a class="nav-item" href="/pages/forgot.html">
-        <span class="nav-item__icon">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          Notifications
+          <span class="badge-count" id="sidebar-badge">0</span>
+        </a>
+        <a href="/pages/forgot.html">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0">
             <rect x="2" y="7" width="12" height="8" rx="1" stroke="currentColor" stroke-width="1.5" />
             <path d="M5 7V5a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="1.5" />
           </svg>
-        </span>
-        Security
-      </a>
+          Security
+        </a>
 
-      <span class="sidebar__section-label">Site</span>
-      <a class="nav-item" href="/">Home</a>
-      <a class="nav-item" href="/#about">About</a>
-      <a class="nav-item" href="/#contact">Contact</a>
-    </nav>
+        <span class="nav-section">Site</span>
+        <a href="/">Home</a>
+        <a href="/#about">About</a>
+        <a href="/#contact">Contact</a>
+      </nav>
 
-    <div class="sidebar__footer">
-      <div class="sidebar__user">
-        <div class="sidebar__avatar" id="sidebar-avatar">–</div>
-        <div class="sidebar__user-info">
-          <span class="sidebar__user-name" id="sidebar-name">–</span>
-          <span class="sidebar__user-email" id="sidebar-email">–</span>
+      <div class="sidebar__footer">
+        <div class="sidebar__user">
+          <div class="admin-avatar" id="sidebar-avatar">–</div>
+          <div class="sidebar__user-info">
+            <span class="sidebar__user-name" id="sidebar-name">–</span>
+            <span class="sidebar__user-email" id="sidebar-email">–</span>
+          </div>
         </div>
+        <button class="sidebar__signout" id="signout-btn">Sign Out</button>
       </div>
-      <button class="sidebar__signout" id="signout-btn">Sign Out</button>
-    </div>
-  </aside>
+    </aside>
 
-  <!-- ── Main ── -->
-  <main class="main">
-    <!-- Top bar -->
-    <header class="topbar">
-      <div class="topbar__left">
-        <span class="topbar__breadcrumb">Dashboard / <strong>Overview</strong></span>
-      </div>
-      <div class="topbar__right">
-        <button id="theme-toggle" class="theme-toggle topbar__icon-btn" aria-label="Switch to light mode"></button>
-        <button class="topbar__icon-btn" id="bell-btn" title="Notifications">
-          <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
-            <path d="M8 1a5 5 0 0 1 5 5v3l1 2H2l1-2V6a5 5 0 0 1 5-5z" stroke="currentColor" stroke-width="1.5" />
-            <path d="M6 13a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.5" />
-          </svg>
-          <span class="topbar__badge" id="bell-badge">0</span>
-        </button>
-        <div class="topbar__profile">
-          <div class="topbar__avatar" id="topbar-avatar">–</div>
-          <span class="topbar__name" id="topbar-name">–</span>
+    <!-- ── Main ── -->
+    <main class="main">
+      <!-- Top bar -->
+      <header class="topbar">
+        <div class="topbar__left">
+          <h2>Dashboard / <span style="color:var(--text)">Overview</span></h2>
         </div>
-      </div>
-    </header>
-
-    <!-- Page content -->
-    <div class="content">
-      <!-- ── Stat cards row ── -->
-      <section class="stats-row">
-        <div class="stat-card">
-          <span class="stat-card__label">Member Since</span>
-          <span class="stat-card__value" id="stat-joined">–</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-card__label">Last Sign In</span>
-          <span class="stat-card__value" id="stat-last-login">–</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-card__label">Account Status</span>
-          <span class="stat-card__value" id="stat-status">–</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-card__label">Applications</span>
-          <span class="stat-card__value" id="stat-apps">–</span>
-        </div>
-      </section>
-
-      <!-- ── Middle row: Activity log + Quick actions ── -->
-      <section class="mid-row">
-        <!-- Activity log -->
-        <div class="panel panel--grow">
-          <div class="panel__head">
-            <span class="panel__title">Activity Log</span>
-            <button class="panel__clear" id="clear-log">Clear</button>
+        <div class="topbar__right">
+          <button id="theme-toggle" class="theme-toggle" aria-label="Switch to light mode"></button>
+          <button class="topbar__icon-btn" id="bell-btn" title="Notifications">
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
+              <path d="M8 1a5 5 0 0 1 5 5v3l1 2H2l1-2V6a5 5 0 0 1 5-5z" stroke="currentColor" stroke-width="1.5" />
+              <path d="M6 13a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.5" />
+            </svg>
+            <span class="topbar__badge" id="bell-badge">0</span>
+          </button>
+          <div class="admin-info">
+            <div class="admin-avatar" id="topbar-avatar">–</div>
+            <span id="topbar-name">–</span>
           </div>
-          <ul class="activity-list" id="activity-list">
-            <li class="activity-list__empty">No recent activity</li>
-          </ul>
         </div>
+      </header>
 
-        <!-- Quick actions -->
-        <div class="panel panel--fixed">
-          <div class="panel__head">
-            <span class="panel__title">Quick Actions</span>
+      <!-- Page content -->
+      <div class="content">
+        <!-- ── Stat cards row ── -->
+        <section class="stats-row">
+          <div class="stat-card">
+            <span class="sc-label">Member Since</span>
+            <span class="sc-num" id="stat-joined">–</span>
           </div>
-          <div class="actions-list">
-            <a class="action-item" href="/pages/application.html">
-              <span class="action-item__label">New Application</span>
-              <span class="action-item__arrow">→</span>
-            </a>
-            <a class="action-item" href="/pages/application.html?type=renew">
-              <span class="action-item__label">Renew Licence</span>
-              <span class="action-item__arrow">→</span>
-            </a>
-            <a class="action-item" href="/pages/forgot.html">
-              <span class="action-item__label">Change Password</span>
-              <span class="action-item__arrow">→</span>
-            </a>
-            <a class="action-item" href="/">
-              <span class="action-item__label">Home Page</span>
-              <span class="action-item__arrow">→</span>
-            </a>
+          <div class="stat-card">
+            <span class="sc-label">Last Sign In</span>
+            <span class="sc-num" id="stat-last-login">–</span>
+          </div>
+          <div class="stat-card">
+            <span class="sc-label">Account Status</span>
+            <span class="sc-num" id="stat-status">–</span>
+          </div>
+          <div class="stat-card">
+            <span class="sc-label">Applications</span>
+            <span class="sc-num" id="stat-apps">–</span>
+          </div>
+        </section>
+
+        <!-- ── Middle row: Activity log + Quick actions ── -->
+        <section class="mid-row">
+          <!-- Activity log -->
+          <div class="panel panel--grow">
+            <div class="panel__head">
+              <span class="panel__title">Activity Log</span>
+              <button class="panel__clear" id="clear-log">Clear</button>
+            </div>
+            <ul class="activity-list" id="activity-list">
+              <li class="activity-list__empty">No recent activity</li>
+            </ul>
           </div>
 
-          <!-- Account info card -->
-          <div class="panel__head" style="margin-top: 1.2rem">
-            <span class="panel__title">Account</span>
-          </div>
-          <div class="account-card">
-            <div class="account-card__avatar" id="account-avatar">–</div>
-            <div class="account-card__info">
-              <span class="account-card__name" id="account-name">–</span>
-              <span class="account-card__email" id="account-email">–</span>
-              <span class="account-card__since" id="account-since">–</span>
+          <!-- Quick actions -->
+          <div class="panel panel--fixed">
+            <div class="panel__head">
+              <span class="panel__title">Quick Actions</span>
+            </div>
+            <div class="actions-list">
+              <a class="action-item" href="/pages/application.html">
+                <span class="action-item__label">New Application</span>
+                <span class="action-item__arrow">→</span>
+              </a>
+              <a class="action-item" href="/pages/application.html?type=renew">
+                <span class="action-item__label">Renew Licence</span>
+                <span class="action-item__arrow">→</span>
+              </a>
+              <a class="action-item" href="/pages/forgot.html">
+                <span class="action-item__label">Change Password</span>
+                <span class="action-item__arrow">→</span>
+              </a>
+              <a class="action-item" href="/">
+                <span class="action-item__label">Home Page</span>
+                <span class="action-item__arrow">→</span>
+              </a>
+            </div>
+
+            <!-- Account info card -->
+            <div class="panel__head" style="margin-top: 1.2rem">
+              <span class="panel__title">Account</span>
+            </div>
+            <div class="account-card">
+              <div class="admin-avatar" id="account-avatar">–</div>
+              <div class="account-card__info">
+                <span class="account-card__name" id="account-name">–</span>
+                <span class="account-card__email" id="account-email">–</span>
+                <span class="account-card__since" id="account-since">–</span>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- ── Notification drawer ── -->
-      <div class="notif-overlay" id="notif-overlay"></div>
-      <div class="notif-drawer" id="notif-drawer">
-        <div class="notif-drawer__head">
-          <span>Notifications</span>
-          <button class="notif-drawer__close" id="notif-close">✕</button>
+        <!-- ── Notification drawer ── -->
+        <div class="notif-overlay" id="notif-overlay"></div>
+        <div class="notif-drawer" id="notif-drawer">
+          <div class="notif-drawer__head">
+            <span>Notifications</span>
+            <button class="notif-drawer__close" id="notif-close">✕</button>
+          </div>
+          <ul class="notif-list" id="notif-list">
+            <li class="notif-list__empty">No notifications</li>
+          </ul>
         </div>
-        <ul class="notif-list" id="notif-list">
-          <li class="notif-list__empty">No notifications</li>
-        </ul>
       </div>
-    </div>
-  </main>
+    </main>
+  </div>
 
   <div id="toast" class="toast"></div>
   <script src="/public/js/theme.js"></script>
