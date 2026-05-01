@@ -192,3 +192,10 @@
     height: 360px;
   }
 }
+
+@media (max-width: 900px) {
+  .map-wrap { height: 420px; }
+}
+@media (max-width: 480px) {
+  .map-wrap { height: 320px; }
+}

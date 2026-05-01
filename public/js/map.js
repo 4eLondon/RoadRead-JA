@@ -335,9 +335,6 @@
           ? TAJ_OFFICES.filter(o => o.name.toLowerCase().includes(q) || o.address.toLowerCase().includes(q))
           : TAJ_OFFICES
         );
-
-        const shareBtn = document.getElementById('share-location-btn');
-        if (shareBtn) shareBtn.style.display = 'none';
       },
       err => {
         const msgs = { 1: 'Location access denied.', 2: 'Location unavailable.', 3: 'Request timed out.' };

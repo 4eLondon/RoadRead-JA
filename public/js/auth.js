@@ -42,7 +42,9 @@ function showRegister() {
   formRegister.classList.remove("form-wrap--hidden");
   const adminIdDisplay = document.getElementById("admin-id-display");
   if (adminIdDisplay) adminIdDisplay.style.display = "none";
-  updateStrengthBar(""); // reset strength bar when switching back
+  const passField = document.getElementById("reg-pass");
+  if (passField) passField.value = "";
+  updateStrengthBar("");
   clearErrs([
     "err-reg-name", "err-reg-email", "err-reg-pass", "err-reg-confirm",
     "err-reg-trn", "err-reg-department", "err-reg-job-title", "err-reg-work-phone",
