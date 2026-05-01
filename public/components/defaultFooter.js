@@ -5,7 +5,6 @@ class DefaultFooter extends HTMLElement {
     <div class="footer__inner">
       <div class="footer__brand">
         <img src="/public/images/logo.png" style="width: 160px; height: auto" alt="Road Ready JA logo" />
-        <p>Digitally Driving Forward</p>
       </div>
       <div class="footer__links">
         <a href="#home">Home</a>
